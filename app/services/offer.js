@@ -1,4 +1,4 @@
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('Offer', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 

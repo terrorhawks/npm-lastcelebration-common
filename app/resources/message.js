@@ -1,4 +1,4 @@
-angular.module('common.resources')
+angular.module('common.resources', [])
 
 .factory('Message', ['$resource', 'domainName', function ($resource, domainName) {
 

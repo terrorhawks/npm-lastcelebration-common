@@ -1,4 +1,4 @@
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('authInterceptor', function ($rootScope, $q, $window) {
   return {

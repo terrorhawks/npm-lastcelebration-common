@@ -1,4 +1,4 @@
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('S3', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 

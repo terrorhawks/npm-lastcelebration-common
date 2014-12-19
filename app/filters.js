@@ -1,4 +1,4 @@
-angular.module('common.filters')
+angular.module('common.filters', [])
    /*Cuts from string piece with specified length*/
     .filter('cut', function () {
         return function (value, wordwise, max) {

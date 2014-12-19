@@ -1,4 +1,4 @@
-angular.module('common.resources')
+angular.module('common.resources', [])
 
 .factory('Requisition', ['$resource', 'domainName', function ($resource, domainName) {
 
