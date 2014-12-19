@@ -1,4 +1,4 @@
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('Account', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 return {
@@ -47,7 +47,7 @@ return {
   }
 };
 }]);
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('authInterceptor', function ($rootScope, $q, $window) {
   return {
@@ -71,7 +71,7 @@ angular.module('common.services')
   };
 });
 
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('Location', ['$q', '$http', 'domainName', function($q, $http, domainName) {
  
@@ -94,7 +94,7 @@ angular.module('common.services')
 
   };
 }]);
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('Offer', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 
@@ -163,7 +163,7 @@ angular.module('common.services')
   };
 
 }]);
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('Proposition', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 
@@ -247,7 +247,7 @@ angular.module('common.services')
 
   };
 }]);
-angular.module('common.services')
+angular.module('common.services', [])
 
 .factory('S3', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 
