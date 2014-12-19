@@ -1,4 +1,4 @@
-angular.module('common.resources')
+angular.module('common.resources', [])
 
 .factory('Message', ['$resource', 'domainName', function ($resource, domainName) {
 
@@ -11,7 +11,7 @@ angular.module('common.resources')
     }
   });
 }]);
-angular.module('common.resources')
+angular.module('common.resources', [])
 
 .factory('PropositionMedia', ['$resource', 'domainName', function ($resource, domainName) {
 
@@ -24,7 +24,7 @@ angular.module('common.resources')
     }
   });
 }]);
-angular.module('common.resources')
+angular.module('common.resources', [])
 
 .factory('Requisition', ['$resource', 'domainName', function ($resource, domainName) {
 

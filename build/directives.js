@@ -1,4 +1,4 @@
-angular.module('common.directives')
+angular.module('common.directives', [])
   .directive('upcase', function() {
     return {
      require: 'ngModel',
