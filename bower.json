@@ -6,7 +6,10 @@
     "lastcelebration"
   ],
   "description": "Common files for lastcelebration",
-  "main": "index.js",
+  "main": ["build/directives.js",
+      "build/filters.js",
+      "build/resources.js",
+      "build/services.js"],
   "moduleType": [
     "globals"
   ],
