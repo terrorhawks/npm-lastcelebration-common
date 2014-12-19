@@ -1,0 +1,23 @@
+{
+  "name": "lastcelebration-common",
+  "version": "0.0.1",
+  "homepage": "https://github.com/project-xx/npm-lastcelebration-common",
+  "authors": [
+    "lastcelebration"
+  ],
+  "description": "Common files for lastcelebration",
+  "main": "index.js",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    ".idea"
+  ]
+}
