@@ -11,7 +11,7 @@ angular.module('common.resources')
     }
   });
 }]);
-angular.module('common.resources', [])
+angular.module('common.resources')
 
 .factory('Offer', ['$resource', 'domainName', function ($resource, domainName) {
 
