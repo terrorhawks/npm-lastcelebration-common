@@ -11,6 +11,27 @@ angular.module('common.resources')
     }
   });
 }]);
+angular.module('common.resources', [])
+
+.factory('Offer', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/offers/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: false 
+    }
+
+  });
+
+}]);
 angular.module('common.resources')
 
 .factory('PropositionMedia', ['$resource', 'domainName', function ($resource, domainName) {
