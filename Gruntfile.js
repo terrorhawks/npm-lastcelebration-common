@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     // Tasks
     grunt.initConfig({
@@ -20,13 +20,16 @@ module.exports = function(grunt) {
                 src:  'app/filters.js',
                 dest: 'build/filters.js'
             }
+        },
+        jshint: {
+            all: ['Gruntfile.js', 'app/**/*.js', 'app/*.js']
         }
 
 
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
-
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     //Default task
-    grunt.registerTask('default', ['concat']);
+    grunt.registerTask('default', ['jshint', 'concat']);
 };
