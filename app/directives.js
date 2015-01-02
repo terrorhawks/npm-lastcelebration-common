@@ -98,23 +98,6 @@ angular.module('common.directives')
   };
 })
 
-.directive('offer', function($state, Offer, Proposition) {
-  return {
-    restrict: 'E',
-    templateUrl: 'templates/offers/offer.html',
-    replace: true,
-    link: function($scope, element, attrs){
-      $scope.book = function(offer){
-        if (attrs.site) {
-          Offer.storeOffer(offer);
-          Proposition.storeSite(angular.fromJson(attrs.site));
-          $state.go('youthfully.booking');
-        }
-      };
-    }
-  };
-})
-
 .directive('booking', function($state, $stateParams, Offer, OfferService,Proposition) {
     return {
       restrict: 'A',
