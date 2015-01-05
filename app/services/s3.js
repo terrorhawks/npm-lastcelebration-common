@@ -114,18 +114,19 @@ angular.module('common.services')
             options = new FileUploadOptions();
  
         options.fileKey = "file";
-        options.fileName = key;
+        options.fileName = key; 
+        options.mimeType = "image/jpeg";
         options.chunkedMode = false;
         options.headers = {
-            Connection: "close"
-       };
+            'Content-Type': undefined
+        };
         options.params = {
             "key": key,
             "AWSAccessKeyId": params.key,
             "acl": 'public-read',
             "policy": params.policy,
             "signature": params.signature,
-            "Content-Type": ""
+            "Content-Type": "image/jpeg"
         };
  
         ft.upload(imageURI, s3URI,
@@ -182,7 +183,7 @@ angular.module('common.services')
         //already been uploaded
         deferred.resolve(media);
       } else {
-        var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
+        var s3Uri = 'http://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
         getAWSPolicy().then(function (options) {
           var file = folder + '/' + key;
           var file_uri = s3Uri + file;
