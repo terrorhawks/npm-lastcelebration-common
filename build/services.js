@@ -211,8 +211,8 @@ angular.module('common.services')
   var s3_config;
   var purge_date;
 
-  //cached for 50mins
-  var ttl_in_ms = 300000;
+  //cached for 50 seconds
+  var ttl_in_ms = 50000;
 
   function postFormData(uri, formData) {
     var deferred = $q.defer();
