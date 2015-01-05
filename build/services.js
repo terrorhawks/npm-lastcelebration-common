@@ -227,15 +227,15 @@ angular.module('common.services')
     return deferred.promise;
   }
 
-  function createFormData(key, options, image_uri) {
+  function createFormData(key, options, byteArray) {
     var fd = new FormData();
-    fd.append('key', key);
+    fd.append('key', key + '.jpg');
     fd.append('acl', 'public-read');
     fd.append('Content-Type', 'image/jpeg');
     fd.append('AWSAccessKeyId', options.key);
     fd.append('policy', options.policy);
     fd.append('signature', options.signature);
-    fd.append('file', image_uri);
+    fd.append('file', byteArray);
     return fd;
   }
 
@@ -273,7 +273,8 @@ angular.module('common.services')
         getAWSPolicy().then(function (options) {
           var file = folder + '/' + key;
           var file_uri = s3Uri + file;
-          var fd = createFormData(file,  options, media.local_uri);
+          var byteArray = Base64Binary.decodeArrayBuffer(media.data);  
+          var fd = createFormData(file,  options, byteArray);
           postFormData(s3Uri, fd).then(function (response) {
             media.content_type =  'image/jpg';
             media.uri = file_uri;
