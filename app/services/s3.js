@@ -153,6 +153,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         getAWSPolicy().then(function (options) {
           var file = folder + '/' + key;
           var file_uri = s3Uri + file;
+          console.log(media.data);
           var byteArray = Base64Binary.decodeArrayBuffer(media.data);  
           var fd = createFormData(file,  options, byteArray);
           postFormData(s3Uri, fd).then(function (response) {
