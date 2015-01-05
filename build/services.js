@@ -96,32 +96,6 @@ angular.module('common.services')
 }]);
 angular.module('common.services')
 
-.factory('OfferService', [ function() {
-
-  var offer = {};
-  var offers = {};
-
-  return  {
-    storeOffer: function(data){
-      offer = data;
-    },
-
-    getOffer: function(){
-      return offer;
-    },
-
-    storeOffers: function(data){
-      offers = data;
-    },
-
-    getOffers: function(){
-      return offers;
-    }
-  };
-
-}]);
-angular.module('common.services')
-
 .factory('Proposition', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 
   var site = {};
@@ -285,6 +259,23 @@ angular.module('common.services')
         });
       }
       return deferred.promise;
+    }
+  };
+
+}]);
+angular.module('common.services')
+
+.factory('SharedService', [ function() {
+
+  var data = {};
+
+  return  {
+    store: function(name, data) {
+      data[name] = data;
+    },
+
+    get: function(name) {
+        return data[name];
     }
   };
 
