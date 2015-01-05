@@ -315,7 +315,7 @@ angular.module('common.services')
 
   function uploadToS3(key, params, imageURI, s3URI) {
  
-        var deferred = $.Deferred(),
+        var deferred = $q.defer(),
             ft = new FileTransfer(),
             options = new FileUploadOptions();
  
@@ -340,7 +340,7 @@ angular.module('common.services')
                 deferred.reject(e);
             }, options);
  
-        return deferred.promise();
+        return deferred.promise;
  
     }
 
