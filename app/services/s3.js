@@ -116,6 +116,9 @@ angular.module('common.services')
         options.fileKey = "file";
         options.fileName = key;
         options.chunkedMode = false;
+        options.headers = {
+            Connection: "close"
+       };
         options.params = {
             "key": key,
             "AWSAccessKeyId": params.key,
