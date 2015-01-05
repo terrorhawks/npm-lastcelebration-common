@@ -320,11 +320,11 @@ angular.module('common.services')
             options = new FileUploadOptions();
  
         options.fileKey = "file";
-        options.fileName = fileName;
+        options.fileName = key + '.jpg';
         options.mimeType = "image/jpeg";
         options.chunkedMode = false;
         options.params = {
-            "key": key + '.jpg',
+            "key": key,
             "AWSAccessKeyId": params.key,
             "acl": 'public-read',
             "policy": params.policy,
