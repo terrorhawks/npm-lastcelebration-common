@@ -320,8 +320,7 @@ angular.module('common.services')
             options = new FileUploadOptions();
  
         options.fileKey = "file";
-        options.fileName = key + '.jpg';
-        options.mimeType = "image/jpeg";
+        options.fileName = key;
         options.chunkedMode = false;
         options.params = {
             "key": key,
@@ -329,7 +328,7 @@ angular.module('common.services')
             "acl": 'public-read',
             "policy": params.policy,
             "signature": params.signature,
-            "Content-Type": "image/jpeg"
+            "Content-Type": ""
         };
  
         ft.upload(imageURI, s3URI,
