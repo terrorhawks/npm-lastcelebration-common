@@ -1,11 +1,12 @@
 angular.module('common.services')
 
-.factory('S3', ['$q', '$http', 'domainName', function($q, $http, domainName) {
+.factory('S3', ['$q', '$http', 'domainName', 'awsImageUploadBucket', function($q, $http, domainName, awsImageUploadBucket) {
 
   var s3_config;
   var purge_date;
-  //cached for 50s
-  var ttl_in_ms = 50000;
+
+  //cached for 50mins
+  var ttl_in_ms = 300000;
 
   function postFormData(uri, formData) {
     var deferred = $q.defer();
@@ -20,7 +21,7 @@ angular.module('common.services')
     return deferred.promise;
   }
 
-  function createFormData(key, options, imageBase64) {
+  function createFormData(key, options, image_uri) {
     var fd = new FormData();
     fd.append('key', key);
     fd.append('acl', 'public-read');
@@ -28,7 +29,7 @@ angular.module('common.services')
     fd.append('AWSAccessKeyId', options.key);
     fd.append('policy', options.policy);
     fd.append('signature', options.signature);
-    fd.append('file', imageBase64);
+    fd.append('file', image_uri);
     return fd;
   }
 
@@ -62,11 +63,11 @@ angular.module('common.services')
         //already been uploaded
         deferred.resolve(media);
       } else {
-        var s3Uri = 'https://lastcelebration-images.s3.amazonaws.com/';      
+        var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
         getAWSPolicy().then(function (options) {
           var file = folder + '/' + key;
           var file_uri = s3Uri + file;
-          var fd = createFormData(file,  options, media.data);
+          var fd = createFormData(file,  options, media.local_uri);
           postFormData(s3Uri, fd).then(function (response) {
             media.content_type =  'image/jpg';
             media.uri = file_uri;
