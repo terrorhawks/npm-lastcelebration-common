@@ -332,9 +332,13 @@ angular.module('common.services')
             "acl": 'public-read',
             "policy": params.policy,
             "signature": params.signature,
-            "Content-Type": "image/jpeg"
+            "Content-Type": undefined
         };
- 
+        console.log("uploading...");
+        console.log(imageURI);
+        console.log(s3Uri);
+        console.log(options);
+
         ft.upload(imageURI, s3URI,
             function (e) {
                 deferred.resolve(e);
@@ -389,13 +393,14 @@ angular.module('common.services')
         //already been uploaded
         deferred.resolve(media);
       } else {
-        var s3Uri = 'http://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
+        var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
         getAWSPolicy().then(function (options) {
-          var file = folder + '/' + key;
+          //var file = folder + '/' + key;
+          var file = key;
           var file_uri = s3Uri + file;
 
-          console.log(media.local_uri);
-          //var byteArray = Base64Binary.decodeArrayBuffer(media.data);  
+          console.log("Upload image from " + media.local_uri);
+          
           uploadToS3(file, options, media.local_uri, file_uri).then(function (response) {
           //var fd = createFormData(file,  options, byteArray);
           //postFormData(s3Uri, fd).then(function (response) {
