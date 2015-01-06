@@ -32,7 +32,7 @@ angular.module('common.services')
         options.chunkedMode = false;
         options.httpMethod = 'POST';
         options.headers = {
-            'Content-Type': undefined
+            'Content-Type': ''
         };
         options.params = {
             "key": key,
@@ -40,18 +40,19 @@ angular.module('common.services')
             "acl": 'public-read',
             "policy": params.policy,
             "signature": params.signature,
-            "Content-Type": undefined
+            "Content-Type": ''
         };
         console.log("uploading to s3...");
         console.log(imageURI);
         console.log(s3URI);
         console.log(options);
 
-        ft.upload(imageURI, s3URI,
+        ft.upload(imageURI, encodeURI(s3URI),
             function (e) {
                 deferred.resolve(e);
             },
             function (e) {
+                console.log(e);
                 deferred.reject(e);
             }, options);
  
