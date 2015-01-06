@@ -338,7 +338,7 @@ angular.module('common.services')
 
           console.log("Upload image from " + image_uri);
           
-          uploadToS3(file, options, image_uri, file_uri).then(function (response) {
+          uploadS3(file, options, image_uri, file_uri).then(function (response) {
           //var fd = createFormData(file,  options, byteArray);
           //postFormData(s3Uri, fd).then(function (response) {
             deferred.resolve(file_uri);
