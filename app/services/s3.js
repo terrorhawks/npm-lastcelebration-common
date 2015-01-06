@@ -25,6 +25,7 @@ angular.module('common.services')
     $upload.upload({
         url: s3_uri, //S3 upload url including bucket name,
         method: 'POST',
+        headers: {'Content-Type': undefined},
         data : {
           key: key, // the key to store the file on S3, could be file name or customized
           AWSAccessKeyId: params.key, 
@@ -92,8 +93,17 @@ angular.module('common.services')
     fd.append('AWSAccessKeyId', options.key);
     fd.append('policy', options.policy);
     fd.append('signature', options.signature);
-    fd.append('file', contents);
+    fd.append('canvasImage', dataURItoBlob(contents));
     return fd;
+  }
+
+  function dataURItoBlob(dataURI) {
+    var binary = atob(dataURI.split(',')[1]);
+    var array = [];
+    for(var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
   }
 
   function getAWSPolicy() {
@@ -140,7 +150,7 @@ angular.module('common.services')
           console.log("Upload image from " + image_uri);
           
           //uploadS3(file, options, image_uri, file_uri).then(function (response) {
-          var fd = createFormData(file,  options, "TEST!!!!!!!");
+          var fd = createFormData(file,  options, image_uri);
           postFormData(s3Uri, fd).then(function (response) {
             deferred.resolve(file_uri);
           }, function (error) {
