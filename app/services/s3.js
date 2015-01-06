@@ -93,7 +93,7 @@ angular.module('common.services')
     fd.append('AWSAccessKeyId', options.key);
     fd.append('policy', options.policy);
     fd.append('signature', options.signature);
-    fd.append('canvasImage', dataURItoBlob(contents));
+    fd.append('file', dataURItoBlob(contents));
     return fd;
   }
 
