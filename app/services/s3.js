@@ -97,9 +97,13 @@ angular.module('common.services')
     return fd;
   }
 
+  function decodeFromBase64(input) {
+    input = input.replace(/\s/g, '');
+    return atob(input);
+  }
+
   function dataURItoBlob(b64Data) {
-    console.log(b64Data);
-    var byteCharacters = atob(b64Data);
+    var byteCharacters = decodeFromBase64(b64Data);
     var byteNumbers = new Array(byteCharacters.length);
     for (var i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
