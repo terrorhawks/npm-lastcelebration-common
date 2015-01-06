@@ -336,7 +336,7 @@ angular.module('common.services')
         };
         console.log("uploading...");
         console.log(imageURI);
-        console.log(s3Uri);
+        console.log(s3URI);
         console.log(options);
 
         ft.upload(imageURI, s3URI,
