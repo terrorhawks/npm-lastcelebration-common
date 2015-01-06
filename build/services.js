@@ -213,18 +213,18 @@ angular.module('common.services')
   //cached for 50 seconds
   var ttl_in_ms = 50000;
 
-  // function postFormData(uri, formData) {
-  //   var deferred = $q.defer();
-  //     $http.post(uri, formData, {
-  //       transformRequest: angular.identity,
-  //       headers: {'Content-Type': undefined}
-  //     }).success(function (response, status) {
-  //       deferred.resolve(response);
-  //     }).error(function (error, status) {
-  //       deferred.reject(error);
-  //     });
-  //   return deferred.promise;
-  // }
+  function postFormData(uri, formData) {
+    var deferred = $q.defer();
+      $http.post(uri, formData, {
+        transformRequest: angular.identity,
+        headers: {'Content-Type': undefined}
+      }).success(function (response, status) {
+        deferred.resolve(response);
+      }).error(function (error, status) {
+        deferred.reject(error);
+      });
+    return deferred.promise;
+  }
 
   function uploadS3(key, params, image_uri, s3_uri) {
     var deferred = $q.defer();
@@ -237,7 +237,7 @@ angular.module('common.services')
           acl: 'public-read', // sets the access to the uploaded file in the bucket: private or public 
           policy: params.policy, // base64-encoded json policy (see article below)
           signature: params.signature, // base64-encoded signature based on policy string (see article below)
-          "Content-Type": 'application/octet-stream', // content type of the file (NotEmpty),
+          "Content-Type": 'image/jpeg', // content type of the file (NotEmpty),
           filename: key // this is needed for Flash polyfill IE8-9
         },
         file: image_uri
@@ -290,17 +290,17 @@ angular.module('common.services')
  
     }
 
-  // function createFormData(key, options, byteArray) {
-  //   var fd = new FormData();
-  //   fd.append('key', key + '.jpg');
-  //   fd.append('acl', 'public-read');
-  //   fd.append('Content-Type', 'image/jpeg');
-  //   fd.append('AWSAccessKeyId', options.key);
-  //   fd.append('policy', options.policy);
-  //   fd.append('signature', options.signature);
-  //   fd.append('file', byteArray);
-  //   return fd;
-  // }
+  function createFormData(key, options, contents) {
+    var fd = new FormData();
+    fd.append('key', key + '.jpg');
+    fd.append('acl', 'public-read');
+    fd.append('Content-Type', 'image/jpeg');
+    fd.append('AWSAccessKeyId', options.key);
+    fd.append('policy', options.policy);
+    fd.append('signature', options.signature);
+    fd.append('file', contents);
+    return fd;
+  }
 
   function getAWSPolicy() {
     var deferred = $q.defer();
@@ -345,9 +345,9 @@ angular.module('common.services')
 
           console.log("Upload image from " + image_uri);
           
-          uploadS3(file, options, image_uri, file_uri).then(function (response) {
-          //var fd = createFormData(file,  options, byteArray);
-          //postFormData(s3Uri, fd).then(function (response) {
+          //uploadS3(file, options, image_uri, file_uri).then(function (response) {
+          var fd = createFormData(file,  options, "TEST!!!!!!!");
+          postFormData(s3Uri, fd).then(function (response) {
             deferred.resolve(file_uri);
           }, function (error) {
             deferred.reject(error);
