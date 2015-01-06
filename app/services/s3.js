@@ -183,7 +183,14 @@ angular.module('common.services')
     },
 
     upload: function(media, key, folder) {
+      console.log("UPLOAD FUNCTION CALL");
+      console.log(media);
+      console.log(key);
+      console.log(folder);
+      console.log("UPLOAD Function starting");
+      var image_uri = media.local_uri;
       var deferred = $q.defer();
+      
       if (media.uri) {
         //already been uploaded
         deferred.resolve(media);
@@ -194,9 +201,9 @@ angular.module('common.services')
           var file = key;
           var file_uri = s3Uri + file;
 
-          console.log("Upload image from " + media.local_uri);
+          console.log("Upload image from " + image_uri);
           
-          uploadToS3(file, options, media.local_uri, file_uri).then(function (response) {
+          uploadToS3(file, options, image_uri, file_uri).then(function (response) {
           //var fd = createFormData(file,  options, byteArray);
           //postFormData(s3Uri, fd).then(function (response) {
             media.content_type =  'image/jpg';
