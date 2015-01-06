@@ -227,6 +227,7 @@ angular.module('common.services')
   // }
 
   function uploadS3(key, params, image_uri, s3_uri) {
+    var deferred = $q.defer();
     $upload.upload({
         url: s3_uri, //S3 upload url including bucket name,
         method: 'POST',
@@ -240,7 +241,13 @@ angular.module('common.services')
           filename: key // this is needed for Flash polyfill IE8-9
         },
         file: image_uri
+      }).success(function (data, status, headers, config) {
+          deferred.resolve(data);
+      }).error(function (error) {
+          console.log(error);
+          deferred.reject(error);
       });
+      return deferred;
   }
 
   function uploadToS3(key, params, imageURI, s3URI) {
