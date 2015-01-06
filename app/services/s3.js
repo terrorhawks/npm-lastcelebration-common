@@ -22,7 +22,7 @@ angular.module('common.services')
 
   function createFormData(key, options, contents) {
     var fd = new FormData();
-    fd.append('key', key + '.jpg');
+    fd.append('key', key);
     fd.append('acl', 'public-read');
     fd.append('Content-Type', 'image/jpeg');
     fd.append('AWSAccessKeyId', options.key);
@@ -80,7 +80,7 @@ angular.module('common.services')
       getAWSPolicy().then(function (options) {
           var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
           var folder = create_folder();
-          var file = folder + '/' + uuid4.generate();
+          var file = folder + '/' + uuid4.generate() + '.jpg';
           var file_uri = s3Uri + file;
           var fd = createFormData(file,  options, image_uri);
           postFormData(s3Uri, fd).then(function (response) {
