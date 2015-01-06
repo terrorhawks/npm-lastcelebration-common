@@ -41,7 +41,7 @@ angular.module('common.services')
           console.log(error);
           deferred.reject(error);
       });
-      return deferred;
+      return deferred.promise;
   }
 
   function uploadToS3(key, params, imageURI, s3URI) {
