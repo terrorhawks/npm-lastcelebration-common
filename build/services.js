@@ -323,6 +323,7 @@ angular.module('common.services')
         options.fileName = key; 
         options.mimeType = "image/jpeg";
         options.chunkedMode = false;
+        options.httpMethod = 'POST';
         options.headers = {
             'Content-Type': undefined
         };
