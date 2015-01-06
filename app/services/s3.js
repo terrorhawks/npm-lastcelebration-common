@@ -97,13 +97,22 @@ angular.module('common.services')
     return fd;
   }
 
-  function dataURItoBlob(dataURI) {
-    var binary = atob(dataURI.split(',')[1]);
-    var array = [];
-    for(var i = 0; i < binary.length; i++) {
-        array.push(binary.charCodeAt(i));
+  function dataURItoBlob(b64Data) {
+    console.log(b64Data);
+    var byteCharacters = atob(b64Data);
+    var byteNumbers = new Array(byteCharacters.length);
+    for (var i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
-    return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+    var byteArray = new Uint8Array(byteNumbers);
+    var blob = new Blob([byteArray], {type: 'image/jpeg'});
+    return blob;
+    // var binary = atob(dataURI);
+    // var array = [];
+    // for(var i = 0; i < binary.length; i++) {
+    //     array.push(binary.charCodeAt(i));
+    // }
+    // return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
   }
 
   function getAWSPolicy() {
@@ -147,7 +156,7 @@ angular.module('common.services')
           var file = uuid4.generate();
           var file_uri = s3Uri + file;
 
-          console.log("Upload image from " + image_uri);
+          //console.log("Upload image from " + image_uri);
           
           //uploadS3(file, options, image_uri, file_uri).then(function (response) {
           var fd = createFormData(file,  options, image_uri);
