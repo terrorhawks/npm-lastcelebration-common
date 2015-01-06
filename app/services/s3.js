@@ -32,7 +32,7 @@ angular.module('common.services')
         options.chunkedMode = false;
         options.httpMethod = 'POST';
         options.headers = {
-            'Content-Type': ''
+            'Content-Type': 'application/octet-stream'
         };
         options.params = {
             "key": key,
@@ -40,7 +40,7 @@ angular.module('common.services')
             "acl": 'public-read',
             "policy": params.policy,
             "signature": params.signature,
-            "Content-Type": ''
+            "Content-Type": 'application/octet-stream'
         };
         console.log("uploading to s3...");
         console.log(imageURI);
