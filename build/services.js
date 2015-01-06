@@ -206,7 +206,7 @@ angular.module('common.services')
 }]);
 angular.module('common.services')
 
-.factory('S3', ['$q', '$http', '$cordovaDevice', 'domainName', 'awsImageUploadBucket', 'uuid4', function($q, $http, $cordovaDevice, domainName, awsImageUploadBucket, uuid4) {
+.factory('S3', ['$q', '$http', '$cordovaDevice', 'domainName', 'awsImageUploadBucket', 'uuid4', '$upload', function($q, $http, $cordovaDevice, domainName, awsImageUploadBucket, uuid4, $upload) {
 
   var s3_config;
   var purge_date;
@@ -225,6 +225,23 @@ angular.module('common.services')
   //     });
   //   return deferred.promise;
   // }
+
+  function uploadS3(key, params, image_uri, s3_uri) {
+    $upload.upload({
+        url: s3_uri, //S3 upload url including bucket name,
+        method: 'POST',
+        data : {
+          key: key, // the key to store the file on S3, could be file name or customized
+          AWSAccessKeyId: params.key, 
+          acl: 'public-read', // sets the access to the uploaded file in the bucket: private or public 
+          policy: params.policy, // base64-encoded json policy (see article below)
+          signature: params.signature, // base64-encoded signature based on policy string (see article below)
+          "Content-Type": 'application/octet-stream', // content type of the file (NotEmpty),
+          filename: key // this is needed for Flash polyfill IE8-9
+        },
+        file: image_uri
+      });
+  }
 
   function uploadToS3(key, params, imageURI, s3URI) {
  
