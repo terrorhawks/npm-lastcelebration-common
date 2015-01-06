@@ -313,6 +313,14 @@ angular.module('common.services')
     return deferred.promise;
   }
 
+  function create_folder() {
+    try {
+      return $cordovaDevice.getUUID();
+    } catch (exception) {
+      return "development";
+    }
+  }
+
   return {
     
     sha: function(email) {
@@ -323,7 +331,7 @@ angular.module('common.services')
       var deferred = $q.defer();        
       getAWSPolicy().then(function (options) {
           var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
-          var folder = $cordovaDevice.getUUID();
+          var folder = create_folder();
           //var file = folder + '/' + uuid4.generate();
           var file = uuid4.generate();
           var file_uri = s3Uri + file;
