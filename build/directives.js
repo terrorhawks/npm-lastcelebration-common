@@ -20,7 +20,6 @@ angular.module('common.directives')
 
   .directive('autoGrow', function() {
     return function(scope, element, attr){
-      console.log("autogrow");
       var minHeight = element[0].offsetHeight,
         paddingLeft = element.css('paddingLeft'),
         paddingRight = element.css('paddingRight');
@@ -38,7 +37,6 @@ angular.module('common.directives')
       angular.element(document.body).append($shadow);
    
       var update = function() {
-        console.log("update text area");
         var times = function(string, number) {
           for (var i = 0, r = ''; i < number; i++) {
             r += string;
