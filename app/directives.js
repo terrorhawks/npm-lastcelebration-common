@@ -107,6 +107,7 @@ angular.module('common.directives')
               $state.go('youthfully.booking', {offerId: offer.id});
             } else if (offers.length > 1) {
               SharedService.store('offers', offers);
+              console.log(SharedService.get('offers'));
               $state.go('youthfully.offers');
             } else {
               //TODO: do we need to hide(or do something else) if there is no offers
