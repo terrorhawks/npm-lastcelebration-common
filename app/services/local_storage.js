@@ -21,7 +21,6 @@ angular.module('common.services')
 
     getObject: function(key) {
       var cached_object = $window.localStorage[key];
-      console.log(cached_object);
       if (cached_object) {
         try {
           return JSON.parse(cached_object);
