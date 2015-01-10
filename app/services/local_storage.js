@@ -12,8 +12,12 @@ angular.module('common.services')
       $window.localStorage[key] = JSON.stringify(value);
     },
     getObject: function(key) {
-      console.log($window.localStorage[key]);
-      return JSON.parse($window.localStorage[key] || '{}');
+      var cached_object = $window.localStorage[key];
+      if (cached_object) {
+        return JSON.parse(cached_object);
+      } else {
+        return undefined;
+      }
     }
   };
 
