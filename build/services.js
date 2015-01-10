@@ -73,6 +73,25 @@ angular.module('common.services')
 
 angular.module('common.services')
 
+.factory('$localstorage', ['$window', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '{}');
+    }
+  };
+  
+}]);
+angular.module('common.services')
+
 .factory('Location', ['$q', '$http', 'domainName', function($q, $http, domainName) {
  
   return {
