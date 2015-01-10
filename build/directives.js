@@ -96,23 +96,22 @@ angular.module('common.directives')
   };
 })
 
-.directive('booking', function($state, $stateParams, Offer, SharedService, Proposition) {
+.directive('booking', function($state, $stateParams, Offer, SharedService) {
     return {
       restrict: 'A',
       link: function ($scope, element) {
         element.bind('click', function () {
-            Offer.query({proposition_id: $stateParams.propositionId}, function (offers) {
-            Proposition.storeSite($scope.site);
+          Offer.query({proposition_id: $stateParams.propositionId}, function (offers) {
             if (offers.length == 1) {
               SharedService.store('offer', offers[0]);
-              $state.go('youthfully.booking');
+              $state.go('youthfully.booking', {offerId: offer.id});
             } else if (offers.length > 1) {
               SharedService.store('offers', offers);
               $state.go('youthfully.offers');
             } else {
               //TODO: do we need to hide(or do something else) if there is no offers
             }
-            });
+          });
         });
       }
     };
