@@ -101,7 +101,8 @@ angular.module('common.directives')
       restrict: 'A',
       link: function ($scope, element) {
         element.bind('click', function () {
-          Offer.query({proposition_id: $stateParams.propositionId}, function (offers) {
+          var propositionId = $localstorage.get('currentPropositionId');
+          Offer.query({proposition_id: propositionId}, function (offers) {
             if (offers.length == 1) {
               var offer = offers[0];
               $localstorage.setObject('offer', offer);
