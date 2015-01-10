@@ -103,7 +103,8 @@ angular.module('common.directives')
         element.bind('click', function () {
           Offer.query({proposition_id: $stateParams.propositionId}, function (offers) {
             if (offers.length == 1) {
-              $localstorage.setObject('offer', offers[0]);
+              var offer = offers[0];
+              $localstorage.setObject('offer', offer);
               $state.go('youthfully.booking', {offerId: offer.id});
             } else if (offers.length > 1) {
               $localstorage.setObject('offers', offers);
