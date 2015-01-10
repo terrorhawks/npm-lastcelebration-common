@@ -88,7 +88,7 @@ angular.module('common.services')
       if (value) {
         $window.localStorage[key] = JSON.stringify(value);
       } else {
-        $window.localStorage[key] = undefined;
+        $window.localStorage.removeItem(key);
       }
     },
 
