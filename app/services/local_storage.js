@@ -19,6 +19,10 @@ angular.module('common.services')
       }
     },
 
+    clear: function() {
+      $window.localStorage.clear();
+    },
+
     getObject: function(key) {
       var cached_object = $window.localStorage[key];
       if (cached_object) {
