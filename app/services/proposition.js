@@ -58,14 +58,14 @@ angular.module('common.services')
       return deferred.promise;
     },
 
-    chat: function(proposition_id) {
+    chat: function(proposition_id, last_message_received) {
       var deferred = $q.defer();
       $http({
         url: domainName + '/api/propositions/' + proposition_id,
         method: "GET",
         dataType: 'json',
         data: '',
-        params: {chat: true },
+        params: {chat: true, after: last_message_received },
         interceptAuth: true,
         headers: {
           "Content-Type": "application/json"
