@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('S3', ['$q', '$http', '$cordovaDevice', 'domainName', 'awsImageUploadBucket', 'uuid4', function($q, $http, $cordovaDevice, domainName, awsImageUploadBucket, uuid4) {
+.factory('S3', ['$q', '$http', 'domainName', 'awsImageUploadBucket', 'uuid4', function($q, $http, domainName, awsImageUploadBucket, uuid4) {
 
   var s3_config;
   var purge_date;
@@ -61,24 +61,19 @@ angular.module('common.services')
     return deferred.promise;
   }
 
-  function create_folder() {
-    try {
-      return $cordovaDevice.getUUID();
-    } catch (exception) {
-      return "development";
-    }
+  function create_folder(email) {
+    return "development/" + sha1(email);
   }
 
   return {
-    
     sha: function(email) {
       return sha1(email);
     },
 
-    upload: function(image_uri) {
-      var deferred = $q.defer();        
+    upload: function(image_uri, email) {
+      var deferred = $q.defer();
       getAWSPolicy().then(function (options) {
-          var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';      
+          var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';
           var folder = create_folder();
           var file = folder + '/' + uuid4.generate() + '.jpg';
           var file_uri = s3Uri + file;
@@ -89,9 +84,9 @@ angular.module('common.services')
             deferred.reject(error);
           });
         }, function(error) {
-          deferred.reject(error);
+            deferred.reject(error);
         });
-      return deferred.promise;
+        return deferred.promise;
     }
   };
 
