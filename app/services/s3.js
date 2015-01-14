@@ -74,7 +74,7 @@ angular.module('common.services')
       var deferred = $q.defer();
       getAWSPolicy().then(function (options) {
           var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';
-          var folder = create_folder();
+          var folder = create_folder(email);
           var file = folder + '/' + uuid4.generate() + '.jpg';
           var file_uri = s3Uri + file;
           var fd = createFormData(file,  options, image_uri);
