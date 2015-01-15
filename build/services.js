@@ -282,8 +282,14 @@ angular.module('common.services')
     return deferred.promise;
   }
 
-  function create_folder(email) {
-    return "development/" + sha1(email);
+  function create_folder(identifier) {
+      if (identifier && identifier.indexOf('@') > 0) {
+        return sha1(identifier);
+      } else if(identifier){
+        return identifier;
+      } else{
+        return "development";
+      }
   }
 
   return {
@@ -291,11 +297,11 @@ angular.module('common.services')
       return sha1(email);
     },
 
-    upload: function(image_uri, email) {
+    upload: function(image_uri, identifier) {
       var deferred = $q.defer();
       getAWSPolicy().then(function (options) {
           var s3Uri = 'https://' + awsImageUploadBucket + '.s3.amazonaws.com/';
-          var folder = create_folder(email);
+          var folder = create_folder(identifier);
           var file = folder + '/' + uuid4.generate() + '.jpg';
           var file_uri = s3Uri + file;
           var fd = createFormData(file,  options, image_uri);
