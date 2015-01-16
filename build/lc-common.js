@@ -1,3 +1,8 @@
+angular.module('common.directives', []); 
+angular.module('common.filters', []); 
+angular.module('common.resources', []); 
+angular.module('common.services', []); 
+
 angular.module('common.services')
 
 .factory('Account', ['$q', '$http', 'domainName', function($q, $http, domainName) {
@@ -318,3 +323,233 @@ angular.module('common.services')
   };
 
 }]);
+angular.module('common.resources')
+
+.factory('Message', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/messages/:messageId', { proposition_id: '@proposition_id' }, {
+    query: {
+      isArray: true
+    },
+    save: {
+      method: 'POST'
+    }
+  });
+}]);
+angular.module('common.resources')
+
+.factory('Offer', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/offers/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: true
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
+.factory('PropositionMedia', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/proposition_media/:propositionMediaId', { proposition_id: '@proposition_id' }, {
+    query: {
+      isArray: true
+    },
+    save: {
+      method: 'POST'
+    }
+  });
+}]);
+angular.module('common.resources')
+
+.factory('Requisition', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/requisitions/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: false 
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
+.factory('Site', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/sites/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: true
+    }
+
+  });
+
+}]);
+angular.module('common.directives')
+  .directive('upcase', function() {
+    return {
+     require: 'ngModel',
+     link: function(scope, element, attrs, modelCtrl) {
+        var capitalize = function(inputValue) {
+           if(inputValue === undefined) inputValue = '';
+           var capitalized = inputValue.toUpperCase();
+           if(capitalized !== inputValue) {
+              modelCtrl.$setViewValue(capitalized);
+              modelCtrl.$render();
+           }         
+           return capitalized;
+         };
+         modelCtrl.$parsers.push(capitalize);
+         capitalize(scope[attrs.ngModel]);  // capitalize initial value
+     }
+   };
+})
+
+  .directive('autoGrow', function() {
+    return function(scope, element, attr){
+      var minHeight = element[0].offsetHeight,
+        paddingLeft = element.css('paddingLeft'),
+        paddingRight = element.css('paddingRight');
+   
+      var $shadow = angular.element('<div></div>').css({
+        position: 'absolute',
+        top: -10000,
+        left: -10000,
+        width: element[0].offsetWidth - parseInt(paddingLeft || 0) - parseInt(paddingRight || 0),
+        fontSize: element.css('fontSize'),
+        fontFamily: element.css('fontFamily'),
+        lineHeight: element.css('lineHeight'),
+        resize:     'none'
+      });
+      angular.element(document.body).append($shadow);
+   
+      var update = function() {
+        var times = function(string, number) {
+          for (var i = 0, r = ''; i < number; i++) {
+            r += string;
+          }
+          return r;
+        };
+   
+        var val = element.val().replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/&/g, '&amp;')
+          .replace(/\n$/, '<br/>&nbsp;')
+          .replace(/\n/g, '<br/>')
+          .replace(/\s{2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' '; });
+        $shadow.html(val);
+   
+        element.css('height', Math.max($shadow[0].offsetHeight + 10 /* the "threshold" */, minHeight) + 'px');
+      };
+   
+      element.bind('keyup keydown keypress change', update);
+      update();
+    };
+  })
+
+
+.directive('basesrc', function ($http) {
+  return {
+    restrict: 'A', 
+    scope: {
+      basesrc: '=',
+    },
+    link: function($scope, element, attrs) {
+       if ($scope.basesrc) {
+         $http.get($scope.basesrc).then(function (response) {
+          element.attr("src", "data:image/png;base64," + response.data);
+         });      
+       } else {
+         element.attr("src", "img/user.png");
+       }
+    }
+   };
+})
+
+.directive('match', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, elm, attrs, ctrl) {
+      ctrl.$parsers.unshift(function(viewValue) {
+        if (viewValue === scope[attrs.match]) {
+          ctrl.$setValidity('sameAs', true);
+          return viewValue;
+        } else {
+          ctrl.$setValidity('sameAs', false);
+          return undefined;
+        }
+      });
+    }
+  };
+})
+
+.directive('booking', function($state, $stateParams, Offer, $localstorage) {
+    return {
+      restrict: 'A',
+      link: function ($scope, element) {
+        element.bind('click', function () {
+          var propositionId = $localstorage.get('currentPropositionId');
+          Offer.query({proposition_id: propositionId}, function (offers) {
+            if (offers.length == 1) {
+              var offer = offers[0];
+              $localstorage.setObject('offer', offer);
+              $state.go('youthfully.booking', {offerId: offer.id});
+            } else if (offers.length > 1) {
+              $localstorage.setObject('offers', offers);
+              $state.go('youthfully.offers');
+            } else {
+              //toast message
+            }
+          });
+        });
+      }
+    };
+});
+angular.module('common.filters')
+   /*Cuts from string piece with specified length*/
+    .filter('cut', function () {
+        return function (value, wordwise, max) {
+            if (!value) return '';
+
+            max = parseInt(max, 10);
+            if (!max) return value;
+            if (value.length <= max) return value;
+
+            value = value.substr(0, max);
+            if (wordwise) {
+                var lastspace = value.lastIndexOf(' ');
+                if (lastspace != -1) {
+                    value = value.substr(0, lastspace);
+                }
+            }
+
+            return value + ' …';
+        };
+    });
