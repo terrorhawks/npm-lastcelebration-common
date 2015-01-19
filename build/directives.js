@@ -60,25 +60,6 @@ angular.module('common.directives')
     };
   })
 
-
-.directive('basesrc', function ($http) {
-  return {
-    restrict: 'A', 
-    scope: {
-      basesrc: '=',
-    },
-    link: function($scope, element, attrs) {
-       if ($scope.basesrc) {
-         $http.get($scope.basesrc).then(function (response) {
-          element.attr("src", "data:image/png;base64," + response.data);
-         });      
-       } else {
-         element.attr("src", "img/user.png");
-       }
-    }
-   };
-})
-
 .directive('match', function() {
   return {
     require: 'ngModel',
