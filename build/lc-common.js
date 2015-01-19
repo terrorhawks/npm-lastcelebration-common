@@ -359,6 +359,23 @@ angular.module('common.resources')
 }]);
 angular.module('common.resources')
 
+.factory('Payment', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/payments/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    query: {
+      isArray: false 
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
 .factory('PropositionMedia', ['$resource', 'domainName', function ($resource, domainName) {
 
   return  $resource(domainName + '/api/proposition_media/:propositionMediaId', { proposition_id: '@proposition_id' }, {
@@ -473,25 +490,6 @@ angular.module('common.directives')
       update();
     };
   })
-
-
-.directive('basesrc', function ($http) {
-  return {
-    restrict: 'A', 
-    scope: {
-      basesrc: '=',
-    },
-    link: function($scope, element, attrs) {
-       if ($scope.basesrc) {
-         $http.get($scope.basesrc).then(function (response) {
-          element.attr("src", "data:image/png;base64," + response.data);
-         });      
-       } else {
-         element.attr("src", "img/user.png");
-       }
-    }
-   };
-})
 
 .directive('match', function() {
   return {
