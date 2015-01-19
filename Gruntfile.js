@@ -4,21 +4,13 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Concatenates files
         concat: {
+            options: {
+                // the banner is inserted at the top of the output
+                banner: "angular.module('common.directives', []); \nangular.module('common.filters', []); \nangular.module('common.resources', []); \nangular.module('common.services', []); \n\n"
+            },
             services: {
-                src: 'app/services/*.js',
-                dest: 'build/services.js'
-            },
-            resources: {
-                src: 'app/resources/*.js',
-                dest: 'build/resources.js'
-            },
-           directives: {
-                src:  'app/directives.js',
-                dest: 'build/directives.js'
-            },
-            filters: {
-                src:  'app/filters.js',
-                dest: 'build/filters.js'
+                src: ['app/services/*.js', 'app/resources/*.js', 'app/directives.js', 'app/filters.js'],
+                dest: 'build/lc-common.js'
             }
         },
         jshint: {
