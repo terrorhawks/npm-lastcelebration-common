@@ -504,6 +504,40 @@ angular.module('common.directives')
   };
 })
 
+.directive('thumbnail', function ($timeout, awsImageUploadBucket) {
+  return {
+    restrict: 'A', 
+    scope: {
+      thumbnail: '=',
+    },
+    link: function(scope, element, attrs) {
+        var count = 0;
+        var refreshAfter = function(file_uri, milliseconds) {
+              $timeout(function () {
+                element.attr("src", file_uri);
+                if (count >= 5) {
+                    element.unbind('error');
+                    element.attr("src","img/user.png");
+                } else {
+                    count++;
+                }
+            }, milliseconds);
+        };
+        var updateImageToThumbnail = function (file_uri) {
+              var thumbnail_file_uri = file_uri.replace(awsImageUploadBucket, awsImageUploadBucket + "resized").replace(".jpg", "75x75.jpg");  
+              element.attr("src", thumbnail_file_uri); 
+              element.bind('error', function() {
+                element.attr("src","img/image_loading_spinner.gif");
+                refreshAfter(thumbnail_file_uri, 2000 );
+              });
+        };
+        if (scope.thumbnail) {
+            updateImageToThumbnail(scope.thumbnail);
+        }
+    }   
+   };
+})
+
 .directive('booking', function($state, $stateParams, Offer, $localstorage) {
     return {
       restrict: 'A',
@@ -519,7 +553,7 @@ angular.module('common.directives')
               $localstorage.setObject('offers', offers);
               $state.go('youthfully.offers');
             } else {
-              //toast message
+              //shouldn't need this situation as we should hide the book button
             }
           });
         });
