@@ -365,10 +365,6 @@ angular.module('common.resources')
 
     create: {
       method: 'POST'
-    },
-
-    query: {
-      isArray: false 
     }
 
   });
