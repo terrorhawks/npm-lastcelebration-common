@@ -13,7 +13,7 @@ angular.module('common.resources')
     },
     
     query: {
-      isArray: false 
+      isArray: true 
     }
 
   });
