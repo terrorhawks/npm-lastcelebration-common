@@ -622,4 +622,20 @@ angular.module('common.filters')
 
             return value + ' …';
         };
+    })
+
+    .filter('requisitionstatus', function () {
+        return function (value) {
+            if (!value) {
+              return '';  
+          } else if (value==='assigned') {
+            return "Awaiting response";
+          } else if (value==='in_progress') {
+            return "In conversation";
+          } else if (value==='booked') {
+            return "Booked";
+          } else if (value==='closed') {
+            return "Closed";
+          }
+        };
     });
