@@ -289,7 +289,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         if (identifier && identifier.indexOf('@') > 0) {
             return sha1(identifier);
         } else if (identifier) {
-            if (uploaded_from == 'signup') {
+            if (uploaded_from === 'signup') {
                 return sha1(identifier);
             } else {
                 return identifier;
@@ -316,7 +316,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
             var deferred = $q.defer();
             getAWSPolicy().then(function (options) {
                 var s3Uri = 'https://' + getBucketName(uploaded_from) + '.s3.amazonaws.com/';
-                var folder = create_folder(identifier);
+                var folder = create_folder(identifier, uploaded_from);
                 var file = folder + '/' + uuid4.generate() + '.jpg';
                 var file_uri = s3Uri + file;
                 var fd = createFormData(file,  options, image_uri);
