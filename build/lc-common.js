@@ -506,7 +506,7 @@ angular.module('common.directives')
         link: function($scope, $element, $attrs, ngModelCtrl) {
             var listener = function() {
                if ($element.val()) {
-                var value = $element.val().replace(/\s/g, ' ');
+                var value = $element.val().replace(/\s/g, '');
                 $element.val($filter('postcode')(value, false));
               }
             };
