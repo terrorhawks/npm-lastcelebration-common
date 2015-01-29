@@ -60,6 +60,25 @@ angular.module('common.directives')
     };
   })
 
+.directive('postcode', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, elm, attrs, ctrl) {
+      ctrl.$parsers.unshift(function(viewValue) {
+        if (!viewValue) {
+              return '';  
+          } else if (viewValue.length===6) {
+            return viewValue.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+          } else if (viewValue.length===7) {
+            return viewValue.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+          } else {
+            return viewValue;
+          }
+      });
+    }
+  };
+})
+
 .directive('match', function() {
   return {
     require: 'ngModel',
