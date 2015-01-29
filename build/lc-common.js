@@ -500,65 +500,41 @@ angular.module('common.directives')
    };
 })
 
-  .directive('autoGrow', function() {
-    return function(scope, element, attr){
-      var minHeight = element[0].offsetHeight,
-        paddingLeft = element.css('paddingLeft'),
-        paddingRight = element.css('paddingRight');
-   
-      var $shadow = angular.element('<div></div>').css({
-        position: 'absolute',
-        top: -10000,
-        left: -10000,
-        width: element[0].offsetWidth - parseInt(paddingLeft || 0) - parseInt(paddingRight || 0),
-        fontSize: element.css('fontSize'),
-        fontFamily: element.css('fontFamily'),
-        lineHeight: element.css('lineHeight'),
-        resize:     'none'
-      });
-      angular.element(document.body).append($shadow);
-   
-      var update = function() {
-        var times = function(string, number) {
-          for (var i = 0, r = ''; i < number; i++) {
-            r += string;
-          }
-          return r;
-        };
-   
-        var val = element.val().replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/&/g, '&amp;')
-          .replace(/\n$/, '<br/>&nbsp;')
-          .replace(/\n/g, '<br/>')
-          .replace(/\s{2,}/g, function(space) { return times('&nbsp;', space.length - 1) + ' '; });
-        $shadow.html(val);
-   
-        element.css('height', Math.max($shadow[0].offsetHeight + 10 /* the "threshold" */, minHeight) + 'px');
-      };
-   
-      element.bind('keyup keydown keypress change', update);
-      update();
+.directive('formatPostcode', function($filter, $browser) {
+    return {
+        require: 'ngModel',
+        link: function($scope, $element, $attrs, ngModelCtrl) {
+            console.log("format postcode " + viewValue);
+            var listener = function() {
+                var value = $element.val().replace(/\s/g, '');
+                $element.val($filter('postcode')(value, false));
+            };
+            
+            // This runs when we update the text field
+            ngModelCtrl.$parsers.push(function(viewValue) {
+                return viewValue.replace(/\s/g, '');
+            });
+            
+            // This runs when the model gets updated on the scope directly and keeps our view in sync
+            ngModelCtrl.$render = function() {
+                $element.val($filter('postcode')(ngModelCtrl.$viewValue, false));
+            };
+            
+            $element.bind('change', listener);
+            $element.bind('keydown', function(event) {
+                var key = event.keyCode;
+                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
+                // This lets us support copy and paste too
+                if (key == 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return; 
+                $browser.defer(listener); // Have to do this or changes don't get picked up properly
+            });
+            
+            $element.bind('paste cut', function() {
+                $browser.defer(listener);
+            });
+        }
+        
     };
-  })
-
-.directive('postcode', function() {
-  return {
-    require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      ctrl.$parsers.unshift(function(viewValue) {
-        if (!viewValue) {
-              return '';  
-          } else if (viewValue.length===6) {
-            return viewValue.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-          } else if (viewValue.length===7) {
-            return viewValue.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-          } else {
-            return viewValue;
-          }
-      });
-    }
-  };
 })
 
 .directive('match', function() {
