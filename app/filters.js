@@ -23,14 +23,17 @@ angular.module('common.filters')
     .filter('postcode', function () {
         return function (value) {
             if (!value) {
-              return '';  
-          } else if (value.length===6) {
-            return value.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-          } else if (value.length===7) {
-            return value.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-          } else {
-            return value;
-          }
+              return '';
+            } else {  
+              value.replace(/\s/g, '');
+              if (value.length===6) {
+                return value.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+              } else if (value.length===7) {
+                return value.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+              } else {
+                return value;
+              }
+            }
         };
     })
 

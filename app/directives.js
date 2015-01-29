@@ -24,19 +24,18 @@ angular.module('common.directives')
         link: function($scope, $element, $attrs, ngModelCtrl) {
             var listener = function() {
                if ($element.val()) {
-                var value = $element.val().replace(/\s/g, '');
                 $element.val($filter('postcode')(value, false));
               }
             };
             
-            // This runs when we update the text field
-            ngModelCtrl.$parsers.push(function(viewValue) {
-              if (viewValue) {
-                return viewValue.replace(/\s/g, '');
-              } else {
-                return viewValue;
-              }
-            });
+            // // This runs when we update the text field
+            // ngModelCtrl.$parsers.push(function(viewValue) {
+            //   if (viewValue) {
+            //     return viewValue.replace(/\s/g, '');
+            //   } else {
+            //     return viewValue;
+            //   }
+            // });
             
             // This runs when the model gets updated on the scope directly and keeps our view in sync
             ngModelCtrl.$render = function() {

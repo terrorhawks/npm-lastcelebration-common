@@ -506,19 +506,18 @@ angular.module('common.directives')
         link: function($scope, $element, $attrs, ngModelCtrl) {
             var listener = function() {
                if ($element.val()) {
-                var value = $element.val().replace(/\s/g, '');
                 $element.val($filter('postcode')(value, false));
               }
             };
             
-            // This runs when we update the text field
-            ngModelCtrl.$parsers.push(function(viewValue) {
-              if (viewValue) {
-                return viewValue.replace(/\s/g, '');
-              } else {
-                return viewValue;
-              }
-            });
+            // // This runs when we update the text field
+            // ngModelCtrl.$parsers.push(function(viewValue) {
+            //   if (viewValue) {
+            //     return viewValue.replace(/\s/g, '');
+            //   } else {
+            //     return viewValue;
+            //   }
+            // });
             
             // This runs when the model gets updated on the scope directly and keeps our view in sync
             ngModelCtrl.$render = function() {
@@ -640,14 +639,17 @@ angular.module('common.filters')
     .filter('postcode', function () {
         return function (value) {
             if (!value) {
-              return '';  
-          } else if (value.length===6) {
-            return value.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-          } else if (value.length===7) {
-            return value.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-          } else {
-            return value;
-          }
+              return '';
+            } else {  
+              value.replace(/\s/g, '');
+              if (value.length===6) {
+                return value.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+              } else if (value.length===7) {
+                return value.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+              } else {
+                return value;
+              }
+            }
         };
     })
 
