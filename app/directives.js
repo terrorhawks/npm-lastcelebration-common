@@ -24,7 +24,7 @@ angular.module('common.directives')
         link: function($scope, $element, $attrs, ngModelCtrl) {
             var listener = function() {
                if ($element.val()) {
-                var value = $element.val().replace(/\s{2}/g, ' ');
+                var value = $element.val().replace(/\s/g, ' ');
                 $element.val($filter('postcode')(value, false));
               }
             };
@@ -32,7 +32,7 @@ angular.module('common.directives')
             // This runs when we update the text field
             ngModelCtrl.$parsers.push(function(viewValue) {
               if (viewValue) {
-                return viewValue.replace(/\s{2}/g, '');
+                return viewValue.replace(/\s/g, '');
               } else {
                 return viewValue;
               }
