@@ -641,7 +641,7 @@ angular.module('common.filters')
             if (!value) {
               return '';
             } else {  
-              value.replace(/\s/g, '');
+              value = value.replace(/\s/g, '');
               if (value.length===6) {
                 return value.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
               } else if (value.length===7) {
