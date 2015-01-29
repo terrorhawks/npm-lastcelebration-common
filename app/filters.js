@@ -24,12 +24,12 @@ angular.module('common.filters')
         return function (value) {
             if (!value) {
               return '';
-            } else {  
-              value = value.replace(/\s/g, '');
-              if (value.length===6) {
-                return value.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
-              } else if (value.length===7) {
-                return value.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+            } else {
+              var value_to_change = value.replace(/\s/g, '');
+              if (value_to_change.length===6) {
+                return value_to_change.replace(/(.{3})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
+              } else if (value_to_change.length===7) {
+                return value_to_change.replace(/(.{4})/g, '$1 ').replace(/(^\s+|\s+$)/,'');
               } else {
                 return value;
               }
