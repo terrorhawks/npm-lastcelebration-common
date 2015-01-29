@@ -48,4 +48,12 @@ angular.module('common.filters')
             return "Closed";
           }
         };
-    });
+    })
+
+    .filter('smartCurrency', ['$filter',  function($filter) {
+        return function(amount, currencyCode) {
+            if(amount) {
+                return $filter('isoCurrency')(amount, currencyCode).replace('.00', '');
+            }
+        };
+    }]);
