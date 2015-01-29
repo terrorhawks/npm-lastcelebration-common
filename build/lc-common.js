@@ -505,7 +505,8 @@ angular.module('common.directives')
         require: 'ngModel',
         link: function($scope, $element, $attrs, ngModelCtrl) {
             var listener = function() {
-               if ($element.val()) {
+              var value = $element.val();
+              if (value) {
                 $element.val($filter('postcode')(value, true));
               }
             };
