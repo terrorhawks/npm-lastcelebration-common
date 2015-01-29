@@ -504,7 +504,7 @@ angular.module('common.directives')
     return {
         require: 'ngModel',
         link: function($scope, $element, $attrs, ngModelCtrl) {
-            console.log("format postcode " + viewValue);
+            console.log("format postcode ");
             var listener = function() {
                 var value = $element.val().replace(/\s/g, '');
                 $element.val($filter('postcode')(value, false));
@@ -512,6 +512,7 @@ angular.module('common.directives')
             
             // This runs when we update the text field
             ngModelCtrl.$parsers.push(function(viewValue) {
+              console.log("view value "  + viewValue);
                 return viewValue.replace(/\s/g, '');
             });
             
