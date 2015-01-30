@@ -54,7 +54,7 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window) {
+.factory('authInterceptor', function ($rootScope, $q, $window, $state) {
   return {
     request: function (config) {
       var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
