@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window, $state) {
+.factory('authInterceptor', function ($rootScope, $q, $window) {
   return {
     request: function (config) {
       var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
@@ -18,14 +18,13 @@ angular.module('common.services')
         // handle the case where the user is not authenticated
       }
       return response || $q.when(response);
+    },
+    responseError: function(rejection) {
+      if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
+        $rootScope.$broadcast("redirect:home");
+        return $q.reject(rejection);
+      }
+      return rejection || $q.when(rejection);
     }
-    // ,
-    // responseError: function(rejection) {
-    //   if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
-    //     $state.go('youthfully.home');
-    //     return $q.reject(rejection);
-    //   }
-    //   return rejection || $q.when(rejection);
-    // }
   };
 });
