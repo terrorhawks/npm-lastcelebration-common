@@ -20,11 +20,11 @@ angular.module('common.services')
       return response || $q.when(response);
     },
     responseError: function(rejection) {
-      if (response.status === 500 || response.status === 404 || response.status === 403) {
+      if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
         $state.go('youthfully.home');
         return $q.reject(rejection);
       }
-      return response || $q.when(response);
+      return rejection || $q.when(rejection);
     }
   };
 });
