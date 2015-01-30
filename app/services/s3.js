@@ -41,12 +41,13 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         return blob;
     }
 
-    function getAWSPolicy() {
+    function getAWSPolicy(uploaded_from) {
         var deferred = $q.defer();
         if (s3_config && purge_date > new Date().getTime()) {
             deferred.resolve(s3_config);
         } else {
-            $http.get(domainName + '/api/s3')
+            var uriParams = uploaded_from === 'signup' ? '?signup=true' : '';
+            $http.get(domainName + '/api/s3' + uriParams)
                 .success(function(response) {
                     s3_config = response;
                     purge_date = new Date().getTime() + ttl_in_ms;
@@ -86,12 +87,13 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
             return sha1(email);
         },
 
-        upload: function(image_uri, identifier, uploaded_from) {
+        upload: function(image_uri, identifier, uploaded_from, croppedName) {
             var deferred = $q.defer();
-            getAWSPolicy().then(function (options) {
+            getAWSPolicy(uploaded_from).then(function (options) {
                 var s3Uri = 'https://' + getBucketName(uploaded_from) + '.s3.amazonaws.com/';
                 var folder = create_folder(identifier, uploaded_from);
-                var file = folder + '/' + uuid4.generate() + '.jpg';
+                var sizes = croppedName ? croppedName : '';
+                var file = folder + '/' + uuid4.generate() + croppedName + '.jpg';
                 var file_uri = s3Uri + file;
                 var fd = createFormData(file,  options, image_uri);
                 postFormData(s3Uri, fd).then(function (response) {
