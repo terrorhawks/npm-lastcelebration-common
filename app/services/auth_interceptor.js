@@ -8,7 +8,7 @@ angular.module('common.services')
       config.headers = config.headers || {};
       if (have_a_session_token && not_aws_request) {
         //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
-        config.headers.Authorization = $window.sessionStorage.token;
+        config.headers.Authorization  = $window.sessionStorage.token;
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
       }
       return config;
@@ -22,9 +22,8 @@ angular.module('common.services')
     responseError: function(rejection) {
       if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
         $rootScope.$broadcast("redirect:home");
-        return $q.reject(rejection);
       }
-      return rejection;
+      return $q.reject(rejection);
     }
   };
 });
