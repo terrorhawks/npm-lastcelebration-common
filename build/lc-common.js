@@ -57,7 +57,7 @@ angular.module('common.services')
 .factory('authInterceptor', function ($rootScope, $q, $window) {
   return {
     request: function (config) {
-      var not_aws_request = config.url.search(/lastcelebration-images.s3.amazonaws.com/)===-1;
+      var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
       var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && not_aws_request) {
@@ -70,6 +70,13 @@ angular.module('common.services')
     response: function (response) {
       if (response.status === 401) {
         // handle the case where the user is not authenticated
+      }
+      return response || $q.when(response);
+    },
+    responseError: function(rejection) {
+      if (response.status === 500 || response.status === 404 || response.status === 403) {
+        $state.go('youthfully.home');
+        return $q.reject(rejection);
       }
       return response || $q.when(response);
     }
@@ -513,11 +520,7 @@ angular.module('common.directives')
             
             // // This runs when we update the text field
             ngModelCtrl.$parsers.push(function(viewValue) {
-              // if (viewValue) {
-              //   return viewValue.replace(/\s/g, '');
-              // } else {
                  return viewValue;
-            //  }
             });
             
             // This runs when the model gets updated on the scope directly and keeps our view in sync
