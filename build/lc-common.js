@@ -78,7 +78,7 @@ angular.module('common.services')
         $rootScope.$broadcast("redirect:home");
         return $q.reject(rejection);
       }
-      return rejection || $q.when(rejection);
+      return rejection;
     }
   };
 });
