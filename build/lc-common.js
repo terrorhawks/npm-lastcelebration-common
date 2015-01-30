@@ -72,14 +72,15 @@ angular.module('common.services')
         // handle the case where the user is not authenticated
       }
       return response || $q.when(response);
-    },
-    responseError: function(rejection) {
-      if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
-        $state.go('youthfully.home');
-        return $q.reject(rejection);
-      }
-      return rejection || $q.when(rejection);
     }
+    // ,
+    // responseError: function(rejection) {
+    //   if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
+    //     $state.go('youthfully.home');
+    //     return $q.reject(rejection);
+    //   }
+    //   return rejection || $q.when(rejection);
+    // }
   };
 });
 
