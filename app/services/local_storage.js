@@ -4,7 +4,11 @@ angular.module('common.services')
   return {
     
     set: function(key, value) {
-      $window.localStorage[key] = value;
+      if (value) {
+        $window.localStorage[key] = value;
+      } else {
+        $window.localStorage.removeItem(key);
+      }
     },
 
     get: function(key, defaultValue) {
