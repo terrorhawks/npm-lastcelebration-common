@@ -85,7 +85,7 @@ angular.module('common.directives')
         var refreshAfter = function(file_uri, milliseconds) {
               $timeout(function () {
                 element.attr("src", file_uri);
-                if (count >= 5) {
+                if (count >= 3) {
                     element.unbind('error');
                     element.attr("src","img/user.png");
                 } else {
