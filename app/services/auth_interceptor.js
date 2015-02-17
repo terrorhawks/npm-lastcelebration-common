@@ -1,15 +1,15 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $localstorage) {
+.factory('authInterceptor', function ($rootScope, $q, $window) {
   return {
     request: function (config) {
       var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
-      var have_a_session_token = $localstorage.get("token");
+      var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && not_aws_request) {
         //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
-        config.headers.Authorization  = have_a_session_token;
-        config.headers['X-API-EMAIL'] = $localstorage.get("email");
+        config.headers.Authorization  = $window.sessionStorage.token;
+        config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
       }
       return config;
     },
