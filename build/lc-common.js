@@ -58,12 +58,15 @@ angular.module('common.services')
   return {
     request: function (config) {
       var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
+      var clover_request = config.url.search(/api.eu.clover.com/)===-1;
       var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
-      if (have_a_session_token && not_aws_request) {
+      if (have_a_session_token && not_aws_request && !clover_request) {
         //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
         config.headers.Authorization  = $window.sessionStorage.token;
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+      } else if (clover_request) {
+        config.headers.Authorization = "9234cf00-3b4d-6863-ed9d-d2d2310fff69";
       }
       return config;
     },
@@ -83,11 +86,47 @@ angular.module('common.services')
 });
 angular.module('common.services')
 
+.factory('Clover', ['$q', '$http', function($q, $http) {
+
+//   params: {filter: "filter\=name%3D" + item_label, access_token: '9234cf00-3b4d-6863-ed9d-d2d2310fff69'},
+     
+  return {
+
+    items: function (item_label) {
+      var deferred = $q.defer();
+      $http({
+        url: 'https://api.eu.clover.com/v3/merchants/XTN9TJ5X3QAM0/tags', 
+        method: "GET",
+        dataType: 'json',
+        data: '',
+        params: {filter: "filter\=name%3D" + item_label},
+        interceptAuth: false,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .success(function(response) {
+        deferred.resolve(response);
+      })
+      .error(function (error, status) {
+        deferred.reject(error);
+      });
+      return deferred.promise;
+    }
+
+  };
+}]);
+angular.module('common.services')
+
 .factory('$localstorage', ['$window', function($window) {
   return {
     
     set: function(key, value) {
-      $window.localStorage[key] = value;
+      if (value) {
+        $window.localStorage[key] = value;
+      } else {
+        $window.localStorage.removeItem(key);
+      }
     },
 
     get: function(key, defaultValue) {
@@ -574,7 +613,7 @@ angular.module('common.directives')
         var refreshAfter = function(file_uri, milliseconds) {
               $timeout(function () {
                 element.attr("src", file_uri);
-                if (count >= 5) {
+                if (count >= 3) {
                     element.unbind('error');
                     element.attr("src","img/user.png");
                 } else {

@@ -12,7 +12,7 @@ angular.module('common.services')
         config.headers.Authorization  = $window.sessionStorage.token;
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
       } else if (clover_request) {
-        config.headers.Authorization = "9234cf00-3b4d-6863-ed9d-d2d2310fff69"
+        config.headers.Authorization = "9234cf00-3b4d-6863-ed9d-d2d2310fff69";
       }
       return config;
     },
