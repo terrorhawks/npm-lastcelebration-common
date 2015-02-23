@@ -13,7 +13,7 @@ angular.module('common.services')
         method: "GET",
         dataType: 'json',
         data: '',
-        params: {filter: "filter\=name%3D" + item_label},
+        params: {filter: "name%3D" + item_label, access_token: "9234cf00-3b4d-6863-ed9d-d2d2310fff69"},
         interceptAuth: false,
         headers: {
           "Content-Type": "application/json"

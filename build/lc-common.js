@@ -59,8 +59,6 @@ angular.module('common.services')
     request: function (config) {
       var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
       var not_clover_request = config.url.search(/api.eu.clover.com/)===-1;
-      console.log(config.url);
-      console.log("Is a clover request " + !not_clover_request);
       var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && not_aws_request && not_clover_request) {
@@ -70,7 +68,7 @@ angular.module('common.services')
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
       } else if (!not_clover_request) {
         console.log("Add Auth header for Clover");
-        config.headers.Authorization = "9234cf00-3b4d-6863-ed9d-d2d2310fff69";
+        //config.headers.Authorization = "9234cf00-3b4d-6863-ed9d-d2d2310fff69";
       }
       return config;
     },
@@ -103,7 +101,7 @@ angular.module('common.services')
         method: "GET",
         dataType: 'json',
         data: '',
-        params: {filter: "filter\=name%3D" + item_label},
+        params: {filter: "name%3D" + item_label, access_token: "9234cf00-3b4d-6863-ed9d-d2d2310fff69"},
         interceptAuth: false,
         headers: {
           "Content-Type": "application/json"
