@@ -424,6 +424,19 @@ angular.module('common.resources')
 }]);
 angular.module('common.resources')
 
+.factory('Order', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/ecommerce/orders/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
 .factory('Payment', ['$resource', 'domainName', function ($resource, domainName) {
 
   return  $resource(domainName + '/api/payments/:id', { id: '@id' }, {
