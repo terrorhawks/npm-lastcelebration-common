@@ -159,8 +159,12 @@ angular.module('common.services')
 
             getItemIndex: function (item) {
                 var found;
+                var itemWithId = item;
+                if (!item.id){
+                    itemWithId.id = createItemId(item);
+                }
                 basket.some(function (element) {
-                    if (isSameItem(item, element.item)) {
+                    if (isSameItem(itemWithId, element.item)) {
                         found = element;
                         return true;
                     }
