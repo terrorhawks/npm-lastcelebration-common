@@ -1,12 +1,12 @@
 angular.module('common.services')
 
-    .factory('Basket', function ($rootScope, $localstorage) {
+    .factory('Basket', function ($rootScope, $localstorage, $filter) {
         var baseBasketKey = "basket";
 
         var createBasket = function () {
             return baseBasketKey;
         };
-
+        $localstorage.setObject(createBasket(), undefined);
         var basket = $localstorage.getObject(createBasket());
         if (!basket) {
             basket = [];
@@ -15,11 +15,11 @@ angular.module('common.services')
 
         var addOptionsToItem = function (item, optionsGroup) {
             var newItem = JSON.parse(JSON.stringify(item));
-            if (optionsGroup && Object.keys(optionsGroup).length > 0) {
+            if (optionsGroup && optionsGroup.length > 0) {
                 newItem.selectedOptions = optionsGroup;
 
-                angular.forEach(optionsGroup, function (optionGroup, name) {
-                    angular.forEach(optionGroup, function(option){
+                angular.forEach(optionsGroup, function (optionGroup) {
+                    angular.forEach(optionGroup.options, function(option){
                         newItem.price += option.price * option.quantity;
                     });
                 });
@@ -36,41 +36,36 @@ angular.module('common.services')
             $rootScope.totalPrice = total;
         };
 
-        var isSameItem = function (first, second) {
-            var isSameOptions = function () {
-                var isSame = true;
-                var isFirstOptioned = !first.selectedOptions;
-                var isSecondOptioned = !second.selectedOptions;
-                if (isFirstOptioned == isSecondOptioned) {
-                    if (first.selectedOptions) {
-                        if ((Object.keys(first.selectedOptions).length == Object.keys(second.selectedOptions).length)) {
-                            angular.forEach(first.selectedOptions, function (elements, name) {
-                                if (second.selectedOptions[name]) {
-                                    first.selectedOptions[name].every(function (option) {
-                                        return second.selectedOptions[name].some(function (element) {
-                                            isSame = isSame && (element.name == option.name && element.quantity == option.quantity);
-                                            return isSame;
-                                        });
-                                    });
-                                } else {
-                                    return false;
-                                }
-                            });
+        var createItemId = function (item) {
 
-                        } else {
-                            return false;
-                        }
-                    } else {
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
-
-                return isSame;
+            var encodeAsSlug = function (string){
+                return string.split(" ").join("").toLowerCase();
             };
-            return (first.name === second.name) && isSameOptions();
 
+            var sortByName = function(array) {
+                console.log(array);
+                return $filter("orderBy")(array, "name", false);
+
+            };
+
+            var id = encodeAsSlug(item.name);
+            var orderedOptions = sortByName(item.selectedOptions);
+
+            angular.forEach(orderedOptions, function (optionGroup) {
+                id += encodeAsSlug(optionGroup.name);
+                angular.forEach(sortByName(optionGroup.options), function (option) {
+                    if (option) {
+                        id += encodeAsSlug(option.name);
+                        id += option.quantity;
+                    }
+                });
+            });
+            return id;
+        };
+
+        var isSameItem = function (first, second) {
+
+            return first.id == second.id;
         };
 
         updateTotalPrice();
@@ -97,6 +92,7 @@ angular.module('common.services')
                 var amount = quantity ? quantity : 1;
 
                 var optionedItem = addOptionsToItem(item, selectedOptions);
+                optionedItem.id = createItemId(optionedItem);
                 var itemIndex = this.getItemIndex(optionedItem);
                 if (itemIndex < 0) {
                     basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.price * amount});
@@ -114,7 +110,6 @@ angular.module('common.services')
 
             removeFromBasket: function (item) {
                 var index = this.getItemIndex(item);
-
                 if (basket[index].quantity == 1) {
                     basket.splice(index, 1);
                 } else {
@@ -125,11 +120,11 @@ angular.module('common.services')
                 $localstorage.setObject(createBasket(), basket);
             },
 
-            getItemOptions: function (item){
+            getItemOptionsList: function (item){
                 var options = [];
                 if (item.item.selectedOptions){
-                    angular.forEach(item.item.selectedOptions, function(groupOptions, name){
-                        groupOptions.every(function(option){
+                    angular.forEach(item.item.selectedOptions, function(groupOptions){
+                        groupOptions.options.every(function (option) {
                             options.push(option.name);
                             return true;
                         });
