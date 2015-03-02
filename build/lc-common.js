@@ -126,7 +126,6 @@ angular.module('common.services')
             };
 
             var sortByName = function(array) {
-                console.log(array);
                 return $filter("orderBy")(array, "name", false);
 
             };
