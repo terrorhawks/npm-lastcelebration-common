@@ -39,7 +39,9 @@ angular.module('common.services')
         var isSameItem = function (first, second) {
             var isSameOptions = function () {
                 var isSame = true;
-                if (first.selectedOptions == second.selectedOptions) {
+                var isFirstOptioned = !first.selectedOptions;
+                var isSecondOptioned = !second.selectedOptions;
+                if (isFirstOptioned == isSecondOptioned) {
                     if (first.selectedOptions) {
                         if ((Object.keys(first.selectedOptions).length == Object.keys(second.selectedOptions).length)) {
                             angular.forEach(first.selectedOptions, function (elements, name) {
