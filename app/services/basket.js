@@ -127,11 +127,8 @@ angular.module('common.services')
 
             getItemOptions: function (item){
                 var options = [];
-                console.log("item to get options");
-                console.log(item);
                 if (item.item.selectedOptions){
                     angular.forEach(item.item.selectedOptions, function(groupOptions, name){
-                        console.log(groupOptions);
                         groupOptions.every(function(option){
                             options.push(option.name);
                             return true;
