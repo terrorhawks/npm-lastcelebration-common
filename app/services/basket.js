@@ -128,7 +128,9 @@ angular.module('common.services')
                 if (item.item.selectedOptions){
                     angular.forEach(item.item.selectedOptions, function(groupOptions){
                         groupOptions.options.every(function (option) {
-                            options.push(option.name);
+                            for (i=0; i < option.quantity; i++) {
+                                options.push(option.name);
+                            }
                             return true;
                         });
                     });
