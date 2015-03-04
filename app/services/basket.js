@@ -176,8 +176,7 @@ angular.module('common.services')
                     return options;
                 }
 
-                order.orderLineItems = orderLineItems;
-                console.log(order);
+                order.order_line_items = orderLineItems;
                 return order;
             }
 
