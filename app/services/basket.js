@@ -16,12 +16,13 @@ angular.module('common.services')
 
         var addOptionsToItem = function (item, optionsGroup) {
             var newItem = JSON.parse(JSON.stringify(item));
+            newItem.totalPrice = newItem.price;
             if (optionsGroup && optionsGroup.length > 0) {
                 newItem.selectedOptions = optionsGroup;
 
                 angular.forEach(optionsGroup, function (optionGroup) {
                     angular.forEach(optionGroup.options, function(option){
-                        newItem.price += option.price * option.quantity;
+                        newItem.totalPrice += option.price * option.quantity;
                     });
                 });
             }
@@ -99,10 +100,10 @@ angular.module('common.services')
                 optionedItem.id = createItemId(optionedItem);
                 var itemIndex = this.getItemIndex(optionedItem);
                 if (itemIndex < 0) {
-                    basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.price * amount});
+                    basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.totalPrice * amount});
                 } else {
                     basket[itemIndex].quantity += amount;
-                    basket[itemIndex].totalPrice = basket[itemIndex].item.price * basket[itemIndex].quantity;
+                    basket[itemIndex].totalPrice = basket[itemIndex].item.totalPrice * basket[itemIndex].quantity;
                 }
                 this.updateTotalPrice();
                 $localstorage.setObject(createBasket(), basket);
@@ -118,7 +119,7 @@ angular.module('common.services')
                     basket.splice(index, 1);
                 } else {
                     basket[index].quantity--;
-                    basket[index].totalPrice -= basket[index].item.price;
+                    basket[index].totalPrice -= basket[index].item.totalPrice;
                 }
                 this.updateTotalPrice();
                 $localstorage.setObject(createBasket(), basket);
