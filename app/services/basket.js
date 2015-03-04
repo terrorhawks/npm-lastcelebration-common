@@ -6,9 +6,7 @@ angular.module('common.services')
         var createBasket = function () {
             return baseBasketKey;
         };
-        $localstorage.setObject(createBasket(), undefined);
         var basket = $localstorage.getObject(createBasket());
-        $localstorage.setObject(createBasket(), undefined);
         if (!basket) {
             basket = [];
             $localstorage.setObject(createBasket(), basket);
