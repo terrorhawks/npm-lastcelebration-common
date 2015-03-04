@@ -8,6 +8,7 @@ angular.module('common.services')
         };
         $localstorage.setObject(createBasket(), undefined);
         var basket = $localstorage.getObject(createBasket());
+        $localstorage.setObject(createBasket(), undefined);
         if (!basket) {
             basket = [];
             $localstorage.setObject(createBasket(), basket);
@@ -137,6 +138,46 @@ angular.module('common.services')
                 }
 
                 return options;
+            },
+
+            clear: function() {
+                basket = undefined;
+                $localstorage.setObject(baseBasketKey, undefined);
+            },
+
+            formOrder: function () {
+                var order = {};
+                var orderLineItems = [];
+
+                angular.forEach(basket, function (element) {
+                    for (var i = 0; i < element.quantity; i++) {
+                        var orderLineItem = {};
+                        orderLineItem.name = element.item.name;
+                        orderLineItem.price = element.item.price;
+                        orderLineItem.taxonomy = element.item.taxonomy;
+
+                        orderLineItem.options = getOptions(element.item.selectedOptions);
+                        orderLineItems.push(orderLineItem);
+                    }
+                });
+
+                function getOptions(selectedOptions) {
+                    var options = [];
+                    angular.forEach(selectedOptions, function (selectedOption) {
+                        angular.forEach(selectedOption.options, function (option) {
+                            for (var j = 0; j < option.quantity; j++) {
+                                var innerOption = {};
+                                innerOption[option.name] = option.price;
+                                options.push(innerOption);
+                            }
+                        });
+                    });
+                    return options;
+                }
+
+                order.orderLineItems = orderLineItems;
+                console.log(order);
+                return order;
             }
 
         };
