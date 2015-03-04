@@ -116,7 +116,7 @@ angular.module('common.services')
             $rootScope.totalPrice = 0;
             var total = 0;
             angular.forEach(basket, function (item) {
-                total += item.totalPrice;
+                total += (item.totalPrice * item.quantity);
             });
             $rootScope.totalPrice = total;
         };
@@ -202,7 +202,6 @@ angular.module('common.services')
                     basket.splice(index, 1);
                 } else {
                     basket[index].quantity--;
-                    basket[index].totalPrice -= basket[index].item.totalPrice;
                 }
                 this.updateTotalPrice();
                 $localstorage.setObject(createBasket(), basket);
