@@ -100,10 +100,10 @@ angular.module('common.services')
                 optionedItem.id = createItemId(optionedItem);
                 var itemIndex = this.getItemIndex(optionedItem);
                 if (itemIndex < 0) {
-                    basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.totalPrice * amount});
+                    basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.totalPrice});
                 } else {
                     basket[itemIndex].quantity += amount;
-                    basket[itemIndex].totalPrice = basket[itemIndex].item.totalPrice * basket[itemIndex].quantity;
+                    basket[itemIndex].totalPrice = basket[itemIndex].item.totalPrice;
                 }
                 this.updateTotalPrice();
                 $localstorage.setObject(createBasket(), basket);

@@ -78,7 +78,7 @@ angular.module('common.directives')
   return {
     restrict: 'A', 
     scope: {
-      thumbnail: '=',
+      thumbnail: '='
     },
     link: function(scope, element, attrs) {
         var count = 0;
