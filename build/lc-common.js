@@ -54,10 +54,10 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window, awsImageUploadBucket, awsSiteImageUploadBucket) {
+.factory('authInterceptor', function ($rootScope, $q, $window) {
   return {
     request: function (config) {
-      var not_aws_request = config.url.search(/awsImageUploadBucket/)===-1 &&  config.url.search(/awsSiteImageUploadBucket/)===-1;
+      var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
       var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && not_aws_request) {
@@ -527,7 +527,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         upload: function(image_uri, identifier, uploaded_from, croppedName) {
             var deferred = $q.defer();
             getAWSPolicy(uploaded_from).then(function (options) {
-                var s3Uri = 'http://' + getBucketName(uploaded_from);
+                var s3Uri = 'https://' + getBucketName(uploaded_from) + '.s3.amazonaws.com/';
                 var folder = create_folder(identifier, uploaded_from);
                 var sizes = croppedName ? croppedName : '';
                 var file = folder + '/' + uuid4.generate() + croppedName + '.jpg';
