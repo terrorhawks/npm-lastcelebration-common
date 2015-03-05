@@ -52,9 +52,7 @@ return {
   }
 };
 }]);
-angular.module('common.services')
-
-.factory('authInterceptor', function ($rootScope, $q, $window, awsImageUploadBucket, awsSiteImageUploadBucket) {
+var authInterceptor = function ($rootScope, $q, $window, awsImageUploadBucket, awsSiteImageUploadBucket) {
   return {
     request: function (config) {
       var not_aws_request = config.url.search(/awsImageUploadBucket/)===-1 &&  config.url.search(/awsSiteImageUploadBucket/)===-1;
@@ -80,7 +78,10 @@ angular.module('common.services')
       return $q.reject(rejection);
     }
   };
-});
+};
+
+authInterceptor.$inject = ['$root', '$q', '$window', 'awsImageUploadBucket', 'awsSiteImageUploadBucket'];
+angular.module('common.services').factory('authInterceptor', authInterceptor);
 angular.module('common.services')
 
     .factory('Basket', function ($rootScope, $localstorage, $filter) {
