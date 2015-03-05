@@ -3,7 +3,7 @@ angular.module('common.services')
 .factory('authInterceptor', function ($rootScope, $q, $window) {
   return {
     request: function (config) {
-      var not_aws_request = config.url.search(/snaps.youthfully.co/)===-1;
+      var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
       var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && not_aws_request) {
