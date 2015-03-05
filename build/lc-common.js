@@ -899,4 +899,13 @@ angular.module('common.filters')
                 return $filter('isoCurrency')(amount, currencyCode).replace('.00', '');
             }
         };
+    }])
+
+    .filter('belairCurrency', ['$filter', function ($filter) {
+        return function(amount, currencyCode) {
+            if (amount) {
+                var drivenToPound = amount / 100;
+                return $filter('smartCurrency')(drivenToPound, currencyCode);
+            }
+        };
     }]);
