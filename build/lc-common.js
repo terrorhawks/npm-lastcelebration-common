@@ -54,13 +54,13 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window) {
+.factory('authInterceptor', function ($rootScope, $q, $window, domainName) {
   return {
     request: function (config) {
-      var not_aws_request = config.url.search(/s3.amazonaws.com/)===-1;
+      var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
       var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
-      if (have_a_session_token && not_aws_request) {
+      if (have_a_session_token && is_a_request_to_original_domain) {
         //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
         config.headers.Authorization  = $window.sessionStorage.token;
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
@@ -527,8 +527,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         upload: function(image_uri, identifier, uploaded_from, croppedName) {
             var deferred = $q.defer();
             getAWSPolicy(uploaded_from).then(function (options) {
-                //var s3Uri = 'https://' + getBucketName(uploaded_from) + '.s3.amazonaws.com/';
-                var s3Uri = 'http://snaps.youthfully.co.s3.amazonaws.com/';
+                var s3Uri = 'http://' + getBucketName(uploaded_from) + '/';
                 var folder = create_folder(identifier, uploaded_from);
                 var sizes = croppedName ? croppedName : '';
                 var file = folder + '/' + uuid4.generate() + croppedName + '.jpg';
