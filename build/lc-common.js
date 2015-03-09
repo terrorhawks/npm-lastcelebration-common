@@ -247,12 +247,11 @@ angular.module('common.services')
                     angular.forEach(selectedOptions, function (selectedOption) {
                         angular.forEach(selectedOption.options, function (option) {
                             for (var j = 0; j < option.quantity; j++) {
-                                var innerOption = {};
-                                innerOption[option.name] = option.price;
-                                options.push(innerOption);
+                                options.push(option);
                             }
                         });
                     });
+                    console.log(options);
                     return options;
                 }
 
