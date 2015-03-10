@@ -14,6 +14,18 @@ angular.module('common.services')
               deferred.reject(error);
           });
       return deferred.promise;
+    },
+
+    config: function (){
+        var deferred = $q.defer();
+        $http.get(domainName + '/api/ecommerce/config')
+            .success(function(response) {
+                deferred.resolve(response);
+            })
+            .error(function (error, status) {
+                deferred.reject(error);
+        });
+      return deferred.promise;
     }
 
   };
