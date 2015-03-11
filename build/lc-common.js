@@ -317,7 +317,6 @@ angular.module('common.services')
                             }
                         });
                     });
-                    console.log(options);
                     return options;
                 }
 
