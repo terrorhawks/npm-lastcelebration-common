@@ -83,16 +83,25 @@ angular.module('common.services')
 });
 angular.module('common.services')
 
-    .factory('Basket', function ($rootScope, $localstorage, $filter) {
+    .factory('Basket', function ($rootScope, $localstorage, $filter, $ionicPopup, $state, $q) {
         var baseBasketKey = "basket";
+        var baseCategoryKey = "category";
 
         var createBasket = function () {
             return baseBasketKey;
         };
+        var createCategory = function () {
+            return baseCategoryKey;
+        };
+
         var basket = $localstorage.getObject(createBasket());
+        var currentCategory = $localstorage.getObject(createCategory());
+
         if (!basket) {
             basket = [];
+            currentCategory = {};
             $localstorage.setObject(createBasket(), basket);
+            $localstorage.setObject(createCategory(), currentCategory);
         }
 
         var addOptionsToItem = function (item, optionsGroup) {
@@ -173,21 +182,70 @@ angular.module('common.services')
                 return basket.indexOf(found);
             },
 
-            addToBasket: function (item, quantity, selectedOptions) {
-                // If quantity is specified(for example on menu options page) then use it, else 1
-                var amount = quantity ? quantity : 1;
+            addToBasket: function (category, item, quantity, selectedOptions) {
 
-                var optionedItem = addOptionsToItem(item, selectedOptions);
-                optionedItem.id = createItemId(optionedItem);
-                var itemIndex = this.getItemIndex(optionedItem);
-                if (itemIndex < 0) {
-                    basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.totalPrice});
+                var deferred = $q.defer();
+
+                var categoryError = function(parentScope) {
+                    return $ionicPopup.confirm({
+                        template: "You already have <b>" + currentCategory.name + "</b> in your shopping cart. " +
+                        "Shall I remove the " + currentCategory.name + " items from your cart?",
+                        buttons: [
+                            {
+                                text: "Yes",
+                                type: 'button-positive',
+                                onTap: function (e) {
+                                    parentScope.clear();
+                                    currentCategory.name = category;
+                                    setItems(parentScope);
+                                    resolveDeffer();
+                                }
+                            },
+                            {
+                                text: "No"
+                            }
+                        ]});
+                };
+
+                if (!currentCategory || !currentCategory.name) {
+                    currentCategory.name = category;
+                    setItems(this);
+                    resolveDeffer();
+                } else if (currentCategory.name == category) {
+                    setItems(this);
+                    resolveDeffer();
                 } else {
-                    basket[itemIndex].quantity += amount;
-                    basket[itemIndex].totalPrice = basket[itemIndex].item.totalPrice;
+                    categoryError(this);
                 }
-                this.updateTotalPrice();
-                $localstorage.setObject(createBasket(), basket);
+
+                function setItems(parentScope) {
+                    // If quantity is specified(for example on menu options page) then use it, else 1
+                    var amount = quantity ? quantity : 1;
+
+                    var optionedItem = addOptionsToItem(item, selectedOptions);
+                    optionedItem.id = createItemId(optionedItem);
+                    var itemIndex = parentScope.getItemIndex(optionedItem);
+                    if (itemIndex < 0) {
+                        basket.push({item: optionedItem, quantity: amount, totalPrice: optionedItem.totalPrice});
+                    } else {
+                        basket[itemIndex].quantity += amount;
+                        basket[itemIndex].totalPrice = basket[itemIndex].item.totalPrice;
+                    }
+                    parentScope.updateTotalPrice();
+                    $localstorage.setObject(createBasket(), basket);
+                    $localstorage.setObject(createCategory(), currentCategory);
+                    if ($state.$current.name != 'belair.sub-menu')
+                        $state.go('belair.checkout');
+                    resolveDeffer();
+                }
+
+                function resolveDeffer() {
+                    deferred.resolve(function () {
+                        return true;
+                    });
+                }
+
+                return deferred.promise;
             },
 
             updateTotalPrice: function () {
@@ -222,8 +280,8 @@ angular.module('common.services')
             },
 
             clear: function() {
-                basket = undefined;
-                $localstorage.setObject(baseBasketKey, undefined);
+                basket = [];
+                $localstorage.setObject(baseBasketKey, basket);
             },
 
             formOrder: function () {
