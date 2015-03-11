@@ -24,7 +24,6 @@ angular.module('common.services')
         if (!basket) {
             basket = [];
             $localstorage.setObject(createBasket(), basket);
-            ifBasketEmpty();
         }
         ifBasketEmpty();
 
@@ -125,8 +124,8 @@ angular.module('common.services')
         };
 
         var clearBasket = function () {
-            basket = [];
-            $localstorage.setObject(baseBasketKey, basket);
+            currentCategory = {};
+            $localstorage.setObject(baseBasketKey, undefined);
         };
 
         var categoryError = function(deferred, category, item, quantity, selectedOptions) {
@@ -241,6 +240,10 @@ angular.module('common.services')
 
                 order.order_line_items = orderLineItems;
                 return order;
+            },
+
+            clear: function () {
+                clearBasket();
             }
 
         };

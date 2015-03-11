@@ -107,7 +107,6 @@ angular.module('common.services')
         if (!basket) {
             basket = [];
             $localstorage.setObject(createBasket(), basket);
-            ifBasketEmpty();
         }
         ifBasketEmpty();
 
@@ -208,8 +207,8 @@ angular.module('common.services')
         };
 
         var clearBasket = function () {
-            basket = [];
-            $localstorage.setObject(baseBasketKey, basket);
+            currentCategory = {};
+            $localstorage.setObject(baseBasketKey, undefined);
         };
 
         var categoryError = function(deferred, category, item, quantity, selectedOptions) {
@@ -324,6 +323,10 @@ angular.module('common.services')
 
                 order.order_line_items = orderLineItems;
                 return order;
+            },
+
+            clear: function () {
+                clearBasket();
             }
 
         };
@@ -333,33 +336,44 @@ angular.module('common.services')
 
 .factory('Clover', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 
-  return {
+    return {
 
-    items: function () {
-      var deferred = $q.defer();
-      $http.get(domainName + '/api/ecommerce/inventory')
-          .success(function(response) {
-              deferred.resolve(response);
-          })
-          .error(function (error, status) {
-              deferred.reject(error);
-          });
-      return deferred.promise;
-    },
+        items: function () {
+            var deferred = $q.defer();
+            $http.get(domainName + '/api/ecommerce/inventory')
+                .success(function(response) {
+                    deferred.resolve(response);
+                })
+                .error(function (error, status) {
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        },
 
-    config: function (){
-        var deferred = $q.defer();
-        $http.get(domainName + '/api/ecommerce/config')
-            .success(function(response) {
-                deferred.resolve(response);
-            })
-            .error(function (error, status) {
-                deferred.reject(error);
-        });
-      return deferred.promise;
-    }
+        config: function (){
+            var deferred = $q.defer();
+            $http.get(domainName + '/api/ecommerce/config')
+                .success(function(response) {
+                    deferred.resolve(response);
+                })
+                .error(function (error, status) {
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        },
+        lastOrder: function (id){
+            var deferred = $q.defer();
+            $http.get(domainName + '/api/ecommerce/orders/' + id)
+                .success(function(response) {
+                    deferred.resolve(response);
+                })
+                .error(function (error, status) {
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        }
 
-  };
+    };
 }]);
 angular.module('common.services')
 
