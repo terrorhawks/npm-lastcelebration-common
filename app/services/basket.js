@@ -164,11 +164,11 @@ angular.module('common.services')
             addToBasket: function (category, item, quantity, selectedOptions) {
 
                 var deferred = $q.defer();
-                if (!currentCategory || !currentCategory.name) {
+
+                if (!currentCategory || !currentCategory.name)
                     currentCategory.name = category;
-                    addItemsToBasket(category, item, quantity, selectedOptions);
-                    resolveDeffer(deferred);
-                } else if (currentCategory.name == category) {
+
+                if (currentCategory.name == category) {
                     addItemsToBasket(category, item, quantity, selectedOptions);
                     resolveDeffer(deferred);
                 } else {
