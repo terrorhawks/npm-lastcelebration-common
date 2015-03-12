@@ -125,7 +125,8 @@ angular.module('common.services')
 
         var clearBasket = function () {
             currentCategory = {};
-            $localstorage.setObject(baseBasketKey, undefined);
+            basket = [];
+            $localstorage.setObject(baseBasketKey, basket);
         };
 
         var categoryError = function(deferred, category, item, quantity, selectedOptions) {
