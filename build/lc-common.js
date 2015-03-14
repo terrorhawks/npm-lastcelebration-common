@@ -765,12 +765,13 @@ angular.module('common.directives')
     };
 })
 
-.directive('match', function() {
+.directive('match', function($parse) {
   return {
     require: 'ngModel',
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
-        if (viewValue === scope[attrs.match]) {
+        var model = $parse(attrs.match);
+        if (viewValue === model) {
           ctrl.$setValidity('sameAs', true);
           return viewValue;
         } else {
