@@ -57,35 +57,39 @@ angular.module('common.directives')
     };
 })
 
-.directive('match', function($parse) {
-  return {
-    require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      ctrl.$parsers.unshift(function(viewValue) {
-        var model = $parse(attrs.match);
-        
-        var model_value = model(attrs.ngModel);
-        console.log("context");
-        console.log(attrs.ngModel);
-        console.log("model fn");
-        console.log(model());
-        console.log("model to use");
-        console.log(attrs.match);
-        console.log("model value");
-        console.log(model_value);
-        console.log("view value");
-        console.log(viewValue);
-        if (viewValue === model_value) {
-          ctrl.$setValidity('sameAs', true);
-          return viewValue;
-        } else {
-          ctrl.$setValidity('sameAs', false);
-          return undefined;
+.directive('match',  function match ($parse) {
+    return {
+        require: '?ngModel',
+        restrict: 'A',
+        link: function(scope, elem, attrs, ctrl) {
+            if(!ctrl) {
+                if(console && console.warn){
+                    console.warn('Match validation requires ngModel to be on the element');
+                }
+                return;
+            }
+
+            var matchGetter = $parse(attrs.match);
+
+            scope.$watch(getMatchValue, function(){
+                ctrl.$$parseAndValidate();
+            });
+
+            ctrl.$validators.match = function(){
+                return ctrl.$viewValue === getMatchValue();
+            };
+
+            function getMatchValue(){
+                var match = matchGetter(scope);
+                if(angular.isObject(match) && match.hasOwnProperty('$viewValue')){
+                    match = match.$viewValue;
+                }
+                return match;
+            }
         }
-      });
-    }
-  };
+    };
 })
+
 
 .directive('thumbnail', function ($timeout, awsImageUploadBucket) {
   return {
