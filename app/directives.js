@@ -63,9 +63,17 @@ angular.module('common.directives')
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
         var model = $parse(attrs.match);
-        console.log(model);
+        
         var model_value = model(attrs.ngModel);
+        console.log("context");
+        console.log(attrs.ngModel);
+        console.log("model fn");
+        console.log(model());
+        console.log("model to use");
+        console.log(attrs.match);
+        console.log("model value");
         console.log(model_value);
+        console.log("view value");
         console.log(viewValue);
         if (viewValue === model_value) {
           ctrl.$setValidity('sameAs', true);
