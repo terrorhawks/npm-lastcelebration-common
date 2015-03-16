@@ -863,7 +863,11 @@ angular.module('common.directives')
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
         var model = $parse(attrs.match);
-        if (viewValue === model) {
+        console.log(model);
+        var model_value = model(attrs.ngModel);
+        console.log(model_value);
+        console.log(viewValue);
+        if (viewValue === model_value) {
           ctrl.$setValidity('sameAs', true);
           return viewValue;
         } else {
