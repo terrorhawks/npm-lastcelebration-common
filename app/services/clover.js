@@ -102,7 +102,7 @@ angular.module('common.services')
         },
 
         itemsForCategory: function (category) {
-           getItemsForCategory(category);
+           return getItemsForCategory(category);
         },
 
         itemsForSubCategory: function (category, subCategory) {
@@ -118,11 +118,11 @@ angular.module('common.services')
         },
 
         items: function () {
-            getItems();
+            return getItems();
         },
 
         config: function () {
-            getConfig();  
+            return getConfig();  
         },
 
         lastOrder: function (id){
