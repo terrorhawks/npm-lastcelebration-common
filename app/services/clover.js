@@ -84,14 +84,14 @@ angular.module('common.services')
     return {
 
         setUp: function (deferred) {
-          $q.all([config(), items()]).then(function() {
+          $q.all([getConfig(), getItems()]).then(function() {
             deferred.resolve();
           });
         },
 
         itemsForCategory: function (category) {
             var deferred = $q.defer();
-            items().then(function (items) {
+            getItems().then(function (items) {
                 if (items) {
                     deferred.resolve(items[category]);
                 }
