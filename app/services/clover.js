@@ -3,7 +3,9 @@ angular.module('common.services')
 .constant('ecommerceInit', function($q, Clover) {
 
         return function($q) {
+            console.log("ecommerceInit");
             var deferred = $q.defer();
+            console.log("clover setup");
             Clover.setUp(deferred);
             return deferred.promise;
         };
@@ -43,6 +45,42 @@ angular.module('common.services')
         return deferred.promise;
     };
 
+    var getItems = function () {
+        console.log("ecommerce items");
+        var deferred = $q.defer();
+        var key = 'ecommerce_items';
+        var items_from_cached = getFromCache(key);
+        if (items_from_cached===undefined) {
+           getItemsFromServer().then(function (items) {
+                storeInCache(key, items);
+                deferred.resolve(items);
+           }, function (e) {
+                deferred.reject(e);
+           });
+        } else {
+            deferred.resolve(items_from_cached);
+        }
+        return deferred.promise;
+    };
+
+    var getConfig = function () {
+        console.log("ecommerce config");
+        var deferred = $q.defer();
+        var key = 'ecommerce_config';
+        var config_from_cached = getFromCache(key);
+        if (config_from_cached===undefined) {
+           getConfigFromServer().then(function (ecommerce_config) {
+                storeInCache(key, ecommerce_config);
+                deferred.resolve(ecommerce_config);
+           }, function (e) {
+                deferred.reject(e);
+           });
+        } else {
+            deferred.resolve(config_from_cached);
+        }
+        return deferred.promise;
+    };
+
     return {
 
         setUp: function (deferred) {
@@ -76,37 +114,11 @@ angular.module('common.services')
         },
 
         items: function () {
-            var deferred = $q.defer();
-            var key = 'ecommerce_items';
-            var items_from_cached = getFromCache(key);
-            if (items_from_cached===undefined) {
-               getItemsFromServer().then(function (items) {
-                    storeInCache(key, items);
-                    deferred.resolve(items);
-               }, function (e) {
-                    deferred.reject(e);
-               });
-            } else {
-                deferred.resolve(items_from_cached);
-            }
-            return deferred.promise;
+            getItems();
         },
 
         config: function () {
-            var deferred = $q.defer();
-            var key = 'ecommerce_config';
-            var config_from_cached = getFromCache(key);
-            if (config_from_cached===undefined) {
-               getConfigFromServer().then(function (ecommerce_config) {
-                    storeInCache(key, ecommerce_config);
-                    deferred.resolve(ecommerce_config);
-               }, function (e) {
-                    deferred.reject(e);
-               });
-            } else {
-                deferred.resolve(config_from_cached);
-            }
-            return deferred.promise;
+            getConfig();  
         },
 
         lastOrder: function (id){
