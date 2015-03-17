@@ -81,6 +81,18 @@ angular.module('common.services')
         return deferred.promise;
     };
 
+    var getItemsForCategory = function (category) {
+        var deferred = $q.defer();
+        getItems().then(function (items) {
+            if (items) {
+                deferred.resolve(items[category]);
+            }
+        }, function (e) {
+            deferred.reject(e);
+        });
+        return deferred.promise;
+    };
+
     return {
 
         setUp: function (deferred) {
@@ -90,20 +102,12 @@ angular.module('common.services')
         },
 
         itemsForCategory: function (category) {
-            var deferred = $q.defer();
-            getItems().then(function (items) {
-                if (items) {
-                    deferred.resolve(items[category]);
-                }
-            }, function (e) {
-                deferred.reject(e);
-            });
-            return deferred.promise;
+           getItemsForCategory(category);
         },
 
         itemsForSubCategory: function (category, subCategory) {
             var deferred = $q.defer();
-            itemsForCategory(category).then(function (items_for_category) {
+            getItemsForCategory(category).then(function (items_for_category) {
                 if (items_for_category) {
                     deferred.resolve(items_for_category[subCategory]);
                 }
