@@ -1,15 +1,15 @@
 angular.module('common.services')
 
-.constant('ecommerceInit', function($q, Clover) {
+// .constant('ecommerceInit', function($q, Clover) {
 
-        return function($q) {
-            console.log("ecommerceInit");
-            var deferred = $q.defer();
-            console.log("clover setup");
-            Clover.setUp(deferred);
-            return deferred.promise;
-        };
-})
+//         return function($q) {
+//             console.log("ecommerceInit");
+//             var deferred = $q.defer();
+//             console.log("clover setup");
+//             Clover.setUp(deferred);
+//             return deferred.promise;
+//         };
+// })
 
 .factory('Clover', ['$q', '$http', 'domainName', '$localstorage', function($q, $http, domainName, $localstorage) {
 
@@ -93,6 +93,18 @@ angular.module('common.services')
         return deferred.promise;
     };
 
+    var getItemsForSubCategory = function (category, subCategory) {
+        var deferred = $q.defer();
+        getItemsForCategory(category).then(function (items_for_category) {
+            if (items_for_category) {
+                deferred.resolve(items_for_category[subCategory]);
+            }
+        }, function (e) {
+            deferred.reject(e);
+        });
+        return deferred.promise;
+    };
+
     return {
 
         setUp: function (deferred) {
@@ -106,13 +118,19 @@ angular.module('common.services')
         },
 
         itemsForSubCategory: function (category, subCategory) {
+            return getItemsForSubCategory(category, subCategory);
+        },
+
+        item: function (category, subCategory, id) {
             var deferred = $q.defer();
-            getItemsForCategory(category).then(function (items_for_category) {
-                if (items_for_category) {
-                    deferred.resolve(items_for_category[subCategory]);
-                }
+            getItemsForSubCategory(category, subCategory).then(function (items) {
+                angular.forEach(items, function (item) {
+                    if (item.id === id) {
+                        deferred.resolve(item);
+                    }
+                });
             }, function (e) {
-                deferred.reject(e);
+                deferred.reject(error);
             });
             return deferred.promise;
         },
