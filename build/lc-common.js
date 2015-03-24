@@ -484,7 +484,7 @@ angular.module('common.services')
             getItemsForSubCategory(category, subCategory).then(function (items) {
                 angular.forEach(items, function (item) {
                     console.log(item.id, id);
-                    if (item.id === id) {
+                    if (item.id.toString() === id) {
                         deferred.resolve(item);
                     } else {
                         deferred.reject("Can't find item with id " + id);
