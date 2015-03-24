@@ -490,6 +490,8 @@ angular.module('common.services')
                         deferred.reject("Can't find item with id " + id);
                     }
                 });
+                console.log("Items missing" , items);
+                deferred.reject("no items ");
             }, function (e) {
                 deferred.reject(e);
             });
