@@ -464,7 +464,7 @@ angular.module('common.services')
                     }
                 });
             }, function (e) {
-                deferred.reject(error);
+                deferred.reject(e);
             });
             return deferred.promise;
         },
