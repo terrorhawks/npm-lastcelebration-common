@@ -31,6 +31,7 @@ angular.module('common.services')
         var deferred = $q.defer();
         $http.get(domainName + '/api/ecommerce/inventory')
             .success(function(response) {
+                console.log(response);
                 deferred.resolve(response);
             })
             .error(function (error, status) {
@@ -67,6 +68,7 @@ angular.module('common.services')
            getItemsFromServer().then(function (items) {
                 storeInCache(ITEMS_CACHE_KEY, items);
                 cacheExpires = timenow + CACHE_EXPIRES_IN_MS;
+                console.log(items);
                 deferred.resolve(items);
            }, function (e) {
                 deferred.reject(e);
@@ -101,9 +103,10 @@ angular.module('common.services')
         var deferred = $q.defer();
         getItems().then(function (items) {
             if (items) {
+                console.log(items[category]);
                 deferred.resolve(items[category]);
             } else {
-                deferred.reject();
+                deferred.reject("Items found found");
             }
         }, function (e) {
             deferred.reject(e);
@@ -115,7 +118,10 @@ angular.module('common.services')
         var deferred = $q.defer();
         getItemsForCategory(category).then(function (items_for_category) {
             if (items_for_category) {
+                console.log(items_for_category[subCategory]);
                 deferred.resolve(items_for_category[subCategory]);
+            } else {
+                deferred.reject("Category not found");
             }
         }, function (e) {
             deferred.reject(e);
