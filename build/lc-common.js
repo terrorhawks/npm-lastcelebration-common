@@ -347,6 +347,12 @@ angular.module('common.services')
 
 .factory('Clover', ['$q', '$http', 'domainName', '$localstorage', function($q, $http, domainName, $localstorage) {
 
+    var cacheExpires;
+
+    var CACHE_EXPIRES_IN_MS = 60000; //60 seconds
+
+    var ITEMS_CACHE_KEY = 'ecommerce_items';
+
     var storeInCache = function (key, items) {
         $localstorage.setObject(key, items);
     };
@@ -380,18 +386,28 @@ angular.module('common.services')
     };
 
     var getItems = function () {
-        console.log("ecommerce items");
+        
         var deferred = $q.defer();
-        var key = 'ecommerce_items';
-        var items_from_cached = getFromCache(key);
+        var timenow = Date.now();
+        var items_from_cached;
+
+        if (cacheExpires!==undefined && timenow <= cacheExpires) {
+           items_from_cached = getFromCache(ITEMS_CACHE_KEY);
+        }
+        
         if (items_from_cached===undefined) {
+           
+           console.log("Get items from server");
            getItemsFromServer().then(function (items) {
-                storeInCache(key, items);
+                storeInCache(ITEMS_CACHE_KEY, items);
+                cacheExpires = timenow + CACHE_EXPIRES_IN_MS;
                 deferred.resolve(items);
            }, function (e) {
                 deferred.reject(e);
            });
+
         } else {
+            console.log("Get items from cache");
             deferred.resolve(items_from_cached);
         }
         return deferred.promise;
@@ -420,6 +436,8 @@ angular.module('common.services')
         getItems().then(function (items) {
             if (items) {
                 deferred.resolve(items[category]);
+            } else {
+                deferred.reject();
             }
         }, function (e) {
             deferred.reject(e);
