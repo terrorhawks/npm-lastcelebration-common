@@ -149,8 +149,11 @@ angular.module('common.services')
             var deferred = $q.defer();
             getItemsForSubCategory(category, subCategory).then(function (items) {
                 angular.forEach(items, function (item) {
+                    console.log(item.id, id);
                     if (item.id === id) {
                         deferred.resolve(item);
+                    } else {
+                        deferred.reject("Can't find item with id " + id);
                     }
                 });
             }, function (e) {
