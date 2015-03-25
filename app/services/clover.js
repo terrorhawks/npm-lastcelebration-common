@@ -163,16 +163,18 @@ angular.module('common.services')
 
         item: function (category, subCategory, id) {
             var deferred = $q.defer();
+            var not_found = true;
             getItemsForSubCategory(category, subCategory).then(function (items) {
                 angular.forEach(items, function (item) {
                     console.log(item.id, id);
                     if (item.id.toString() === id) {
+                        not_found = false;
                         deferred.resolve(item);
                     }
                 });
-                console.log("Item not found " + id);
-                deferred.reject("Item not found " + id);
-                
+                if (not_found) {
+                    deferred.reject("Item not found " + id);
+                }
             }, function (e) {
                 deferred.reject(e);
             });
