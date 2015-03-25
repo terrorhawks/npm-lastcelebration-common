@@ -502,14 +502,11 @@ angular.module('common.services')
                     console.log(item.id, id);
                     if (item.id.toString() === id) {
                         deferred.resolve(item);
-                    } else {
-                        deferred.reject("Can't find item with id " + id);
                     }
                 });
-                if (items===undefined || items.length===0) {
-                    console.log("Items missing" , items);
-                    deferred.reject("no items ");
-                }
+                console.log("Item not found " + id);
+                deferred.reject("Item not found " + id);
+                
             }, function (e) {
                 deferred.reject(e);
             });
