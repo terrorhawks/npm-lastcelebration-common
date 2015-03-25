@@ -363,8 +363,16 @@ angular.module('common.services')
 
     var getItemsFromServer = function () {
         var deferred = $q.defer();
-        $http.get(domainName + '/api/ecommerce/inventory')
-            .success(function(response) {
+        $http({
+            url: domainName + '/api/ecommerce/inventory', 
+            method: "GET",
+            dataType: 'json',
+            data: '',
+            interceptAuth: false,
+            headers: {
+              "Content-Type": "application/json"
+            }
+        }).success(function(response) {
                 console.log(response);
                 deferred.resolve(response);
             })
@@ -376,8 +384,16 @@ angular.module('common.services')
 
     var getConfigFromServer = function () {
         var deferred = $q.defer();
-        $http.get(domainName + '/api/ecommerce/config')
-            .success(function(response) {
+        $http({
+            url: domainName + '/api/ecommerce/config', 
+            method: "GET",
+            dataType: 'json',
+            data: '',
+            interceptAuth: false,
+            headers: {
+              "Content-Type": "application/json"
+            }
+        }).success(function(response) {
                 deferred.resolve(response);
             })
             .error(function (error, status) {
