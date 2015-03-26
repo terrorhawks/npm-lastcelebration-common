@@ -36,7 +36,7 @@ angular.module('common.services')
             data: '',
             interceptAuth: false,
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "text/plain"
             }
         }).success(function(response) {
                 deferred.resolve(response);
