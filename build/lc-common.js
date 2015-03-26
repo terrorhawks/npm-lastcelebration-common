@@ -373,7 +373,6 @@ angular.module('common.services')
               "Content-Type": "application/json"
             }
         }).success(function(response) {
-                console.log(response);
                 deferred.resolve(response);
             })
             .error(function (error, status) {
@@ -418,7 +417,6 @@ angular.module('common.services')
            getItemsFromServer().then(function (items) {
                 storeInCache(ITEMS_CACHE_KEY, items);
                 cacheExpires = timenow + CACHE_EXPIRES_IN_MS;
-                console.log(items);
                 deferred.resolve(items);
            }, function (e) {
                 deferred.reject(e);
@@ -432,7 +430,6 @@ angular.module('common.services')
     };
 
     var getConfig = function () {
-        console.log("ecommerce config");
         var deferred = $q.defer();
         var key = 'ecommerce_config';
         var config_from_cached = getFromCache(key);
@@ -453,7 +450,6 @@ angular.module('common.services')
         var deferred = $q.defer();
         getItems().then(function (items) {
             if (items) {
-                console.log(items[category]);
                 deferred.resolve(items[category]);
             } else {
                 deferred.reject("Items found found");
@@ -468,7 +464,7 @@ angular.module('common.services')
         var deferred = $q.defer();
         getItemsForCategory(category).then(function (items_for_category) {
             if (items_for_category) {
-                console.log(items_for_category[subCategory]);
+                
                 deferred.resolve(items_for_category[subCategory]);
             } else {
                 deferred.reject("Category not found");
@@ -500,7 +496,6 @@ angular.module('common.services')
             var not_found = true;
             getItemsForSubCategory(category, subCategory).then(function (items) {
                 angular.forEach(items, function (item) {
-                    console.log(item.id, id);
                     if (item.id.toString() === id) {
                         not_found = false;
                         deferred.resolve(item);
