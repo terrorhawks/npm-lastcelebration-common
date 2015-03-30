@@ -20,7 +20,10 @@ angular.module('common.services')
       return response || $q.when(response);
     },
     responseError: function(rejection) {
-      if (rejection.status === 500 || rejection.status === 404 || rejection.status === 403) {
+      if (rejection.status === 500) {
+        $rootScope.$broadcast("redirect:error");
+      }
+      if (rejection.status === 404 || rejection.status === 403) {
         $rootScope.$broadcast("redirect:home");
       }
       return $q.reject(rejection);
