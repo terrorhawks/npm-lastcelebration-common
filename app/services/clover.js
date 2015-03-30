@@ -149,6 +149,12 @@ angular.module('common.services')
           });
         },
 
+        currentMenu: function () {
+            //change to be based on clover.config (operating hours for menu)
+            var hours = new Date().getHours();
+            return (hours < 12) ? 'breakfast' : 'lunch';
+        },
+
         itemsForCategory: function (category) {
            return getItemsForCategory(category);
         },
