@@ -337,22 +337,11 @@ angular.module('common.services')
     });
 angular.module('common.services')
 
-// .constant('ecommerceInit', function($q, Clover) {
-
-//         return function($q) {
-//             console.log("ecommerceInit");
-//             var deferred = $q.defer();
-//             console.log("clover setup");
-//             Clover.setUp(deferred);
-//             return deferred.promise;
-//         };
-// })
-
 .factory('Clover', ['$q', '$http', 'domainName', '$localstorage', function($q, $http, domainName, $localstorage) {
 
     var cacheExpires;
 
-    var CACHE_EXPIRES_IN_MS = 60000; //60 seconds
+    var CACHE_EXPIRES_IN_MS = 3600000; //1 day
 
     var ITEMS_CACHE_KEY = 'ecommerce_items';
 
@@ -465,12 +454,11 @@ angular.module('common.services')
 
     var getItemsForSubCategory = function (category, subCategory) {
         var deferred = $q.defer();
-        getItemsForCategory(category).then(function (items_for_category) {
-            if (items_for_category) {
-                
-                deferred.resolve(items_for_category[subCategory]);
+         getItems().then(function (items) {
+            if (items) {
+                deferred.resolve(items[category][subCategory]);
             } else {
-                deferred.reject("Category not found");
+                deferred.reject("Items found found");
             }
         }, function (e) {
             deferred.reject(e);
