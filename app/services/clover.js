@@ -4,7 +4,7 @@ angular.module('common.services')
 
     var cacheExpires;
 
-    var CACHE_EXPIRES_IN_MS = 3600000; //1 day
+    var CACHE_EXPIRES_IN_MS = 86400000; //1 day
 
     var ITEMS_CACHE_KEY = 'ecommerce_items';
 
@@ -62,6 +62,8 @@ angular.module('common.services')
         var timenow = Date.now();
         var items_from_cached;
 
+        console.log("time now " + timenow + " expires in " + cacheExpires + " milliseconds left " + (cacheExpires - timenow));
+
         if (cacheExpires!==undefined && timenow <= cacheExpires) {
            items_from_cached = getFromCache(ITEMS_CACHE_KEY);
         }
@@ -74,7 +76,13 @@ angular.module('common.services')
                 cacheExpires = timenow + CACHE_EXPIRES_IN_MS;
                 deferred.resolve(items);
            }, function (e) {
-                deferred.reject(e);
+                //fallback to cache if available
+                items_from_cached = getFromCache(ITEMS_CACHE_KEY);
+                if (items_from_cached===undefined) {
+                    deferred.reject(e);
+                } else {
+                    deferred.resolve(items_from_cached);
+                }
            });
 
         } else {
