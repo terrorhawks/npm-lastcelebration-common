@@ -86,7 +86,7 @@ angular.module('common.services')
 });
 angular.module('common.services')
 
-.factory('Clover', ['$q', '$http', 'domainName', '$localstorage', function($q, $http, domainName, $localstorage) {
+.factory('Clover', ['$q', '$http', 'domainName', '$localstorage', '$rootScope', function($q, $http, domainName, $localstorage, $rootScope) {
 
     var cacheExpires;
 
@@ -117,6 +117,9 @@ angular.module('common.services')
                 deferred.resolve(response);
             })
             .error(function (error, status) {
+                if (getFromCache(ITEMS_CACHE_KEY)===undefined) {
+                    $rootScope.$broadcast('event:error');
+                }
                 deferred.reject(error);
             });
         return deferred.promise;
