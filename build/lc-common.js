@@ -114,14 +114,15 @@ angular.module('common.services')
               "Content-Type": "text/plain"
             }
         }).success(function(response) {
+            console.log("SUCCESS!!!!!!!!");
                 deferred.resolve(response);
-            })
-            .error(function (error, status) {
-                if (getFromCache(ITEMS_CACHE_KEY)===undefined) {
-                    $rootScope.$broadcast('event:error');
-                }
-                deferred.reject(error);
-            });
+        }).error(function (error, status) {
+            console.log("REJECT!!!!!!!!");
+            if (getFromCache(ITEMS_CACHE_KEY)===undefined) {
+                $rootScope.$broadcast('event:error');
+            }
+            deferred.reject(error);
+        });
         return deferred.promise;
     };
 
@@ -140,6 +141,7 @@ angular.module('common.services')
                 deferred.resolve(response);
             })
             .error(function (error, status) {
+                $rootScope.$broadcast('event:error');
                 deferred.reject(error);
             });
         return deferred.promise;
