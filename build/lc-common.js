@@ -624,7 +624,7 @@ angular.module('common.resources')
     },
     
     query: {
-      isArray: true
+      isArray: false
     }
 
   });
