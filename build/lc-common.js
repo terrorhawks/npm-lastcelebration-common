@@ -114,14 +114,15 @@ angular.module('common.services')
               "Content-Type": "text/plain"
             }
         }).success(function(response) {
-            console.log("SUCCESS!!!!!!!!");
-                deferred.resolve(response);
+            deferred.resolve(response);
         }).error(function (error, status) {
-            console.log("REJECT!!!!!!!!");
+            console.log("Failed to get menu items from server", error);
             if (getFromCache(ITEMS_CACHE_KEY)===undefined) {
+                deferred.reject(error);
                 $rootScope.$broadcast('event:error');
+            } else {
+                deferred.resolve(getFromCache(ITEMS_CACHE_KEY));
             }
-            deferred.reject(error);
         });
         return deferred.promise;
     };
