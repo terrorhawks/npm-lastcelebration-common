@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window, domainName) {
+.factory('authInterceptor', function ($rootScope, $q, $window, domainName, companyUUID) {
   return {
     request: function (config) {
       var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
@@ -10,6 +10,9 @@ angular.module('common.services')
         //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
         config.headers.Authorization  = $window.sessionStorage.token;
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+        if (companyUUID) {
+          config.headers['X-COMPANY-UUID'] = companyUUID;
+        }
       }
       return config;
     },
