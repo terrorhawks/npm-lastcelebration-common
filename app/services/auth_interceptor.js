@@ -10,9 +10,9 @@ angular.module('common.services')
         //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
         config.headers.Authorization  = $window.sessionStorage.token;
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
-        if (companyUUID) {
+      }
+      if (companyUUID) {
           config.headers['X-COMPANY-UUID'] = companyUUID;
-        }
       }
       return config;
     },
