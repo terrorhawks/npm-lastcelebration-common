@@ -119,7 +119,7 @@ angular.module('common.services')
         var deferred = $q.defer();
         getItems().then(function (items) {
             if (items) {
-                deferred.resolve(items[category]);
+                deferred.resolve(items[category].categories);
             } else {
                 deferred.reject("Items found found");
             }
@@ -133,7 +133,7 @@ angular.module('common.services')
         var deferred = $q.defer();
          getItems().then(function (items) {
             if (items) {
-                deferred.resolve(items[category][subCategory]);
+                deferred.resolve(items[category].categories[subCategory]);
             } else {
                 deferred.reject("Items found found");
             }
