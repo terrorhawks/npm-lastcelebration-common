@@ -151,6 +151,14 @@ angular.module('common.services')
         return deferred.promise;
     };
 
+    var convert_to_hash = function(items) {
+        var hash_items = {};
+        _.each(items, function (item) {
+            hash_items[item.name] = item;
+        });
+        return hash_items;
+    };
+
     var getItems = function () {
         
         var deferred = $q.defer();
@@ -169,20 +177,20 @@ angular.module('common.services')
            getItemsFromServer().then(function (items) {
                 storeInCache(ITEMS_CACHE_KEY, items);
                 cacheExpires = timenow + CACHE_EXPIRES_IN_MS;
-                deferred.resolve(items);
+                deferred.resolve(convert_to_hash(items));
            }, function (e) {
                 //fallback to cache if available
                 items_from_cached = getFromCache(ITEMS_CACHE_KEY);
                 if (items_from_cached===undefined) {
                     deferred.reject(e);
                 } else {
-                    deferred.resolve(items_from_cached);
+                    deferred.resolve(convert_to_hash(items_from_cached));
                 }
            });
 
         } else {
             console.log("Get items from cache");
-            deferred.resolve(items_from_cached);
+            deferred.resolve(convert_to_hash(items_from_cached));
         }
         return deferred.promise;
     };
