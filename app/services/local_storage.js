@@ -34,8 +34,8 @@ angular.module('common.services')
       if (value) {
         if (cacheTime && cacheTime>0) {
             var timeToExpire = new Date(Date.now() + cacheTime).getTime();
-            var cache_time_key = key + ".cacheTime";
-            $window.localStorage[cache_time_key] = timeToExpire;
+            var cacheTimeKey = key + ".cacheTime";
+            $window.localStorage[cacheTimeKey] = timeToExpire;
         }
         $window.localStorage[key] = JSON.stringify(value);
       } else {
@@ -49,10 +49,10 @@ angular.module('common.services')
 
     getObject: function(key, checkCacheExpiry) {
       if (checkCacheExpiry) {
-        var cache_time_key = key + ".cacheTime";
-        var time_to_expire = $window.localStorage[cache_time_key];
+        var cacheTimeKey = key + ".cacheTime";
+        var timeToExpire = $window.localStorage[cacheTimeKey];
         var timenow = Date.now();
-        if (timenow <= time_to_expire) {
+        if (timenow <= timeToExpire) {
           getObjectFromStorage(key);
         }  else {
           console.log("cache expired for key", key);
