@@ -144,13 +144,14 @@ angular.module('common.services')
         var timenow = Date.now();
         if (timenow <= timeToExpire) {
           console.log("not expired yet, get from cache");
-          getObjectFromStorage(key);
+          return getObjectFromStorage(key);
         }  else {
           console.log("cache expired for key", key);
           $window.localStorage.removeItem(key);
+          return undefined;
         }
       } else {
-        getObjectFromStorage(key);
+        return getObjectFromStorage(key);
       }
       
     }
