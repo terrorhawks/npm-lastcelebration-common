@@ -1,6 +1,6 @@
 {
   "name": "lastcelebration-common",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Common files for lastcelebration",
   "main": "index.js",
   "scripts": {
