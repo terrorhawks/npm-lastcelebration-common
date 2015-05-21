@@ -58,7 +58,8 @@ angular.module('common.services')
           return getObjectFromStorage(key);
         }  else {
           console.log("cache expired for key", key);
-          $window.localStorage.removeItem(key);
+          //lets avoid this to allow stale items to still be used in an emergency!
+          //$window.localStorage.removeItem(key);
           return undefined;
         }
       } else {
