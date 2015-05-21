@@ -71,12 +71,10 @@ angular.module('common.services')
       return config;
     },
     response: function (response) {
-      if (response.status === 401) {
-        // handle the case where the user is not authenticated
-      }
       return response || $q.when(response);
     },
     responseError: function(rejection) {
+      console.log("Response failure", rejection);
       // if (rejection.status === 500) {
       //   $rootScope.$broadcast("redirect:error");
       // }
@@ -147,7 +145,8 @@ angular.module('common.services')
           return getObjectFromStorage(key);
         }  else {
           console.log("cache expired for key", key);
-          $window.localStorage.removeItem(key);
+          //lets avoid this to allow stale items to still be used in an emergency!
+          //$window.localStorage.removeItem(key);
           return undefined;
         }
       } else {
