@@ -17,12 +17,10 @@ angular.module('common.services')
       return config;
     },
     response: function (response) {
-      if (response.status === 401) {
-        // handle the case where the user is not authenticated
-      }
       return response || $q.when(response);
     },
     responseError: function(rejection) {
+      console.log("Response failure", rejection);
       // if (rejection.status === 500) {
       //   $rootScope.$broadcast("redirect:error");
       // }
