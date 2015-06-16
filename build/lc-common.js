@@ -380,6 +380,23 @@ s3Service.$inject = window.ionic ? ['$q', '$http', 'domainName', 'awsImageUpload
 angular.module('common.services').factory('S3', s3Service);
 angular.module('common.resources')
 
+.factory('Beacon', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/beacons/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+    
+    query: {
+      isArray: true
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
 .factory('Company', ['$resource', 'domainName', function ($resource, domainName) {
 
   return  $resource(domainName + '/api/companies/:id', { id: '@id' }, {
