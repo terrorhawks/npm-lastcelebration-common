@@ -61,7 +61,17 @@ angular.module('common.filters')
         };
     }])
 
-    .filter('belairCurrency', ['$filter', function ($filter) {
+    //refactor and remove
+  .filter('belairCurrency', ['$filter', function ($filter) {
+        return function(amount, currencyCode) {
+            if (amount) {
+                var drivenToPound = amount / 100;
+                return $filter('smartCurrency')(drivenToPound, currencyCode);
+            }
+        };
+    }])
+
+    .filter('appCurrency', ['$filter', function ($filter) {
         return function(amount, currencyCode) {
             if (amount) {
                 var drivenToPound = amount / 100;
