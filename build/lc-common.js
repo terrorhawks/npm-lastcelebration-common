@@ -218,8 +218,13 @@ angular.module('common.services')
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
       }
       if (companyUUID) {
+          // mobile apps use pre-configured companyUUID
           config.headers['X-COMPANY-UUID'] = companyUUID;
+      } else {
+          // dashboard uses companyUUID from authenticated user
+          config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
       }
+
       return config;
     },
     response: function (response) {
@@ -244,12 +249,14 @@ angular.module('common.services')
 	var createAuthTokens = function (user) {
 		$window.sessionStorage.token = user.token;
      	$window.sessionStorage.email = user.email;
+     	if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
      	$rootScope.authenticatedUser = user;
      };
 
      var removeAuthTokens = function () {
 		 delete $window.sessionStorage.token;
 	     delete $window.sessionStorage.email;
+	     delete $window.sessionStorage.companyUUID;
 	     console.log("Destroy current authenticated user");
 	     $rootScope.authenticatedUser = undefined;
      };

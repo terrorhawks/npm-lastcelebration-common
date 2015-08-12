@@ -12,8 +12,13 @@ angular.module('common.services')
         config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
       }
       if (companyUUID) {
+          // mobile apps use pre-configured companyUUID
           config.headers['X-COMPANY-UUID'] = companyUUID;
+      } else {
+          // dashboard uses companyUUID from authenticated user
+          config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
       }
+
       return config;
     },
     response: function (response) {
