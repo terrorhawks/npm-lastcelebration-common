@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function($rootScope, $q, $window, domainName, companyUUID) {
   return {
     request: function (config) {
       var is_a_request_to_original_domain = config.url.search(domainName)!==-1;

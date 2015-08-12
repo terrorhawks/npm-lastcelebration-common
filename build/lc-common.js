@@ -54,7 +54,159 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function ($rootScope, $q, $window, domainName, companyUUID) {
+    .factory('AppConfig', ['$rootScope', '$q', '$localstorage', 'Company', function($rootScope, $q, $localstorage, Company) {
+
+        var APP_COMPANY_KEY = "events.app.company";
+        var APP_SITE_KEY = "events.app.site";
+        var APP_MENU_KEY = "events.app.menu";
+
+        var millisecondsUntilMidnight = function () {
+             var time_now = new Date();
+             var time_at_midnight = new Date();
+             time_at_midnight.setHours(24,0,0,0);
+             return time_at_midnight.getTime() - time_now.getTime();
+        };
+
+        var getCompany = function (companyUUID) {
+            var deferred = $q.defer();
+            var company = $localstorage.getObject(APP_COMPANY_KEY, true);
+            if (company) {
+                console.log("Company retrieve from cache.");
+                deferred.resolve(company);
+            } else {
+                getCompanyFromServer(companyUUID, deferred);
+            }
+            return deferred.promise;
+        };
+
+        var refreshCachedSite = function(company) {
+            //once you have chosen a site, it will never expire from cache, unless they are not in the latest company json
+            var site = getChosenSite();
+            if (site !== undefined) {
+                var site_found = _.find(company.sites, function(c_site) {
+                    c_site.id = site.id;
+                });
+                console.log("update site in cache", site_found);
+                //if not found, then it will expire the site from the cache, otherwise update it.
+                setChosenSite(site_found);
+            }
+        };
+
+        var getCompanyFromServer = function (companyUUID, deferred) {
+                Company.get({uuid: companyUUID}).$promise.then(function (company) {
+                    $localstorage.setObject(APP_COMPANY_KEY, company, millisecondsUntilMidnight());
+                    refreshCachedSite(company);
+                    console.log("Company retrieve from server and cached.");
+                    deferred.resolve(company);
+                }, function (error) {
+                    console.log("Failed to retrieve company", error);
+                    deferred.reject(error);
+                });
+        };
+
+        var getSite = function(companyUUID) {
+            var deferred = $q.defer();
+            var chosenSite = getChosenSite();
+            if (chosenSite !== undefined) {
+                console.log("site already in cache", chosenSite.name);
+                deferred.resolve(chosenSite);
+            } else {
+                getCompany(companyUUID).then(function (company) {
+                    if (company.sites.length === 1) {
+                        var site  = company.sites[0];
+                        setChosenSite(site);
+                        deferred.resolve(site);
+                    } else {
+                        deferred.reject("Please choose a branch for " + company.brand_name);
+                    }
+                }, function (error) {
+                    deferred.reject(error);
+                });    
+            }
+            return deferred.promise;
+        };
+
+        var getChosenSite = function () {
+            return $localstorage.getObject(APP_SITE_KEY);
+        };
+
+        var setChosenSite = function (site) {
+            $localstorage.setObject(APP_SITE_KEY, site);
+        };
+
+        var getChosenMenu = function () {
+            return $localstorage.getObject(APP_MENU_KEY, true );
+        };
+
+        var setChosenMenu = function (menu) {
+            console.log("set menu cache for", millisecondsUntilMidnight(), menu);
+            $localstorage.setObject(APP_MENU_KEY, menu, millisecondsUntilMidnight());
+        };
+
+        return {
+
+            init: function (companyUUID) {
+                var deferred = $q.defer();
+                if ($rootScope.company === undefined) {
+                    getCompany(companyUUID).then(function (company) {
+                        $rootScope.company = company;
+                        deferred.resolve(company);
+                    }, function () {
+                        deferred.reject();
+                    });
+                } else {
+                    deferred.resolve($rootScope.company);
+                }
+                if ($rootScope.site === undefined) {
+                    getSite(companyUUID).then(function (site) {
+                        $rootScope.site = site;
+                    }, function (error) {
+                        console.log("No site available", error);
+                    });
+                }
+                if ($rootScope.menu === undefined) {
+                    $rootScope.menu = getChosenMenu();
+                }
+                return deferred.promise;    
+            },
+
+            menu: function () {
+                return getChosenMenu();
+            },
+
+            setMenu: function (menu) {
+                setChosenMenu(menu);
+            },
+
+            company: function (companyUUID) {
+                //promise
+                return getCompany(companyUUID);
+            },
+
+            setSite: function (site) {
+                setChosenSite(site);
+            },
+
+            site: function (companyUUID) {
+                //promise
+                return getSite(companyUUID);
+            },
+
+            defaultAvatar: function (companyUUID) {
+                var deferred = $q.defer();
+                getCompany(companyUUID).then(function (company) {
+                    deferred.resolve(company.default_avatar_for_consumer);
+                }, function () {
+                    deferred.reject();
+                });
+                return deferred.promise;
+            }
+
+        };
+    }]);
+angular.module('common.services')
+
+.factory('authInterceptor', function($rootScope, $q, $window, domainName, companyUUID) {
   return {
     request: function (config) {
       var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
@@ -85,6 +237,225 @@ angular.module('common.services')
     }
   };
 });
+angular.module('common.services')
+
+.factory('AuthenticationService', ['Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', function(Facebook, $rootScope, $http, domainName, $q, $window, Auth) {
+
+	var createAuthTokens = function (user) {
+		$window.sessionStorage.token = user.token;
+     	$window.sessionStorage.email = user.email;
+     	$rootScope.authenticatedUser = user;
+     };
+
+     var removeAuthTokens = function () {
+		 delete $window.sessionStorage.token;
+	     delete $window.sessionStorage.email;
+	     console.log("Destroy current authenticated user");
+	     $rootScope.authenticatedUser = undefined;
+     };
+
+	var authenticateFBUser = function(facebookData, authResponse) {
+		var q = $q.defer();
+	    var authenticatedUser = {
+	      first_name:   facebookData.first_name,
+	      gender:       facebookData.gender,
+	      last_name:    facebookData.last_name,
+	      timezone:     facebookData.timezone,
+	      updated_time: facebookData.updated_time,
+	      locale:       facebookData.locale,
+	      id:           facebookData.id,
+	      verified:     facebookData.verified,
+	      link:         facebookData.link
+	    };
+	    $http.post(domainName + '/api/oauth/registrations', { 
+	      user: { name: facebookData.name, 
+	              email: facebookData.email, 
+	              token: authResponse.accessToken,
+	              expiresIn: authResponse.expiresIn,
+	              facebook: authenticatedUser }
+	     }).then(function (response) {
+	     	var user = response.data.user;
+    		createAuthTokens(user);
+    		$window.sessionStorage.facebookToken = authResponse.accessToken;
+         	$rootScope.$broadcast('event:auth', user);  
+	        q.resolve(user); 
+	     }, function(e) {
+	     	q.reject(e);
+	     });
+	     return q.promise;
+	};
+
+	var facebookMe = function (deferred, successSignin) {
+		Facebook.me().then(function (user) {
+			console.log("facebookMe user", user);
+	    	authenticateFBUser(user, successSignin.authResponse).then(function (user) {
+	    		console.log("authenticateFBUser", user);
+	    		deferred.resolve(user);
+	    	}, function (e) {
+	    		console.log("creating user from facebook creds failed" ,e);
+	    		deferred.reject(e);
+	    	});		    	
+		}, function (e) {
+			console.log("accessing 'me' in facebook failed" ,e);
+			deferred.reject(e);
+		});	
+	};
+
+	var facebookSignin = function (deferred) {
+		console.log("Facebook sign-in");
+		Facebook.login()
+		    .then(function(success) {
+		      console.log("logged in", success);
+		      facebookMe(deferred, success);
+		    }, function (e) {
+		      console.log("logged in failed");
+		      console.log(e);
+		      deferred.reject(e);
+		    });
+	};
+
+	var facebookLogout = function () { 
+		var q = $q.defer();
+		console.log("Facebook logout");
+		Facebook.loginStatus().then(function (response) {
+			console.log(response);
+			if (!response.authResponse) {
+				delete $window.sessionStorage.facebookToken;
+				q.reject();
+			}
+			Facebook.logout().then( function() {
+	    		console.log("Successful facebook logout");
+	      		q.resolve();
+	    	}, function(e) {
+	    		console.log("Unsuccessful facebook logout");
+	    		console.log(e);
+	      		q.reject(e);
+	    	}).finally(function () {
+	    		delete $window.sessionStorage.facebookToken;
+	    	});
+		}, function (e) {
+			console.log("Unsuccessful facebook logout, not logged in");
+			console.log(e);
+		});
+		return q.promise; 
+	};
+
+	var appLogout = function (deferred) {
+		console.log("App logout");
+		Auth.logout().then(function () {
+			console.log("Successful app logout");
+     		removeAuthTokens();
+			deferred.resolve();
+     	}, function (e) {
+     		console.log("Unsuccessful app logout");
+     		removeAuthTokens();
+     		deferred.reject(e);
+     	}).finally(function () {
+     		$rootScope.$broadcast('event:logout');
+     	});
+	};
+
+
+   var deferredLogin = function () {
+	    var defer = $q.defer();
+	    $rootScope.$broadcast('event:login', defer);
+	    return defer.promise;
+   };  
+
+  return {
+
+  	unAuthorisedDeferToLogin: function(event, xhr, deferred) {
+  		deferredLogin().then(function () {
+	        // Successfully logged in.
+	        // Redo the original request.
+	        return $http(xhr.config);
+	    }, function (error) {
+	    	console.log("unAuthorisedDeferToLogin", deferred);
+	    	deferred.reject(error);
+	    }).then(function(response) {
+	        // Successfully recovered from unauthorized error.
+	        // Resolve the original request's promise.
+	        deferred.resolve(response);
+	    }, function(error) {
+	        // There was an error logging in.
+	        // Reject the original request's promise.
+	        deferred.reject(error);
+	    });
+  	},
+
+  	setAuthTokens: function (user) {
+  		createAuthTokens(user);
+  	},
+
+  	getAuthenticatedUser: function (unauthorizedScreen) {
+        var deferred = $q.defer();
+        $http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
+          .success(function(response) {
+          	var user = response.user;
+          	$rootScope.$broadcast('event:auth', user);
+            createAuthTokens(user);
+            deferred.resolve(user);
+        }).error(function (error, status) {
+            deferred.reject(error);
+            console.log("Error getAuthenticatedUser", error);
+            removeAuthTokens();
+        });      
+        return deferred.promise;
+    },
+
+    logout: function () {
+    	var deferred = $q.defer();
+    	if ($rootScope.authenticatedUser && $rootScope.authenticatedUser.is_facebook_auth) {
+    		console.log("facebook logout");
+    		facebookLogout().then(function () {
+				appLogout(deferred);
+    		}, function (e) {
+    			appLogout(deferred);
+    		});
+    	} else {
+    		appLogout(deferred);	
+    	}
+     	return deferred.promise;
+    },
+
+    emailLogin: function (login) {
+    	var deferred = $q.defer();
+	    var creds = { email: login.email, password: login.password, rememberMe: 1};
+	    Auth.login(creds).then(function(response) {
+	    	var user = response.user;
+	      	createAuthTokens(user);
+			$rootScope.$broadcast('event:auth', user);
+	      	deferred.resolve(user);
+	    }, function(response) {
+	      removeAuthTokens();
+	      deferred.reject([response.data.error]);
+	    });
+		return deferred.promise;
+    },
+
+	facebookLogin: function () {
+		console.log("facebook login");
+		var deferred = $q.defer();
+		
+		Facebook.loginStatus().then(function (response) {
+			if (response.status === 'connected') {
+				console.log("facebook already logged in " , response);
+				facebookMe(deferred, response);
+			} else {
+				console.log("Facebook, not logged-in");
+				facebookSignin(deferred);
+			}
+		}, function (e) {
+			console.log("Facebook, login failing", e);
+			deferred.reject(e);
+		});
+		
+		return deferred.promise;
+	}
+
+  };
+
+ }]);
 angular.module('common.services')
 
 .factory('$localstorage', ['$window', function($window) {
