@@ -60,15 +60,9 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         return deferred.promise;
     }
 
-    function create_folder(identifier, uploaded_from) {
-        if (identifier && identifier.indexOf('@') > 0) {
+    function create_folder(identifier) {
+        if (identifier) {
             return sha1(identifier);
-        } else if (identifier) {
-            if (uploaded_from === 'signup') {
-                return sha1(identifier);
-            } else {
-                return identifier;
-            }
         } else {
             return "development";
         }
@@ -87,14 +81,21 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
             return sha1(email);
         },
 
-        upload: function(image_uri, identifier, uploaded_from, croppedName) {
+        upload: function(image_uri, identifier, root_folder, uploaded_from, cropped_name) {
             var deferred = $q.defer();
+            if (!root_folder) {
+                root_folder = '';
+            }
+            if (!cropped_name) {
+                cropped_name = '';
+            }
             getAWSPolicy(uploaded_from).then(function (options) {
                 var s3Uri = 'http://' + getBucketName(uploaded_from) + '.s3.amazonaws.com/';
-                var folder = create_folder(identifier, uploaded_from);
-                var sizes = croppedName ? croppedName : '';
-                var file = folder + '/' + uuid4.generate() + croppedName + '.jpg';
+                var folder = create_folder(identifier);
+                var sizes = cropped_name;
+                var file = root_folder + '/' + folder + '/' + uuid4.generate() + cropped_name + '.jpg';
                 var file_uri = s3Uri + file;
+                console.log("Uploading file to s3.. ", file_uri);
                 var fd = createFormData(file,  options, image_uri);
                 postFormData(s3Uri, fd).then(function (response) {
                     deferred.resolve(file_uri);
