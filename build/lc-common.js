@@ -406,7 +406,7 @@ angular.module('common.services')
         if ($rootScope.authenticatedUser) {
         	//if in root scope already authenticated
 			deferred.resolve($rootScope.authenticatedUser);
-        } else if (unauthorizedScreen && Date.now() <= timeExpiry) {	
+        } else if (unauthorizedScreen && Date.now() <= timeToExpire) {	
 		 	// if not forcing authentication and check in last x period then reject
 			// to avoid lots of requests to server
 			deferred.reject();
