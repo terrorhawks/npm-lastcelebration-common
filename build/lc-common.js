@@ -71,7 +71,7 @@ angular.module('common.services')
             var deferred = $q.defer();
             var company = $localstorage.getObject(APP_COMPANY_KEY, true);
             if (company) {
-                console.log("Company retrieve from cache.");
+                // console.log("Company retrieve from cache.");
                 deferred.resolve(company);
             } else {
                 getCompanyFromServer(companyUUID, deferred);
@@ -86,7 +86,7 @@ angular.module('common.services')
                 var site_found = _.find(company.sites, function(c_site) {
                     c_site.id = site.id;
                 });
-                console.log("update site in cache", site_found);
+                // console.log("update site in cache", site_found);
                 //if not found, then it will expire the site from the cache, otherwise update it.
                 setChosenSite(site_found);
             }
@@ -96,7 +96,7 @@ angular.module('common.services')
                 Company.get({uuid: companyUUID}).$promise.then(function (company) {
                     $localstorage.setObject(APP_COMPANY_KEY, company, millisecondsUntilMidnight());
                     refreshCachedSite(company);
-                    console.log("Company retrieve from server and cached.");
+                    // console.log("Company retrieve from server and cached.");
                     deferred.resolve(company);
                 }, function (error) {
                     console.log("Failed to retrieve company", error);
@@ -108,7 +108,7 @@ angular.module('common.services')
             var deferred = $q.defer();
             var chosenSite = getChosenSite();
             if (chosenSite !== undefined) {
-                console.log("site already in cache", chosenSite.name);
+                // console.log("site already in cache", chosenSite.name);
                 deferred.resolve(chosenSite);
             } else {
                 getCompany(companyUUID).then(function (company) {
@@ -139,7 +139,7 @@ angular.module('common.services')
         };
 
         var setChosenMenu = function (menu) {
-            console.log("set menu cache for", millisecondsUntilMidnight(), menu);
+            // console.log("set menu cache for", millisecondsUntilMidnight(), menu);
             $localstorage.setObject(APP_MENU_KEY, menu, millisecondsUntilMidnight());
         };
 
@@ -151,8 +151,8 @@ angular.module('common.services')
                     getCompany(companyUUID).then(function (company) {
                         $rootScope.company = company;
                         deferred.resolve(company);
-                    }, function () {
-                        deferred.reject();
+                    }, function (error) {
+                        deferred.reject(error);
                     });
                 } else {
                     deferred.resolve($rootScope.company);
@@ -394,19 +394,36 @@ angular.module('common.services')
   		createAuthTokens(user);
   	},
 
-  	getAuthenticatedUser: function (unauthorizedScreen) {
+
+
+	getAuthenticatedUser: function (unauthorizedScreen) {
+
         var deferred = $q.defer();
-        $http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
-          .success(function(response) {
-          	var user = response.user;
-          	$rootScope.$broadcast('event:auth', user);
-            createAuthTokens(user);
-            deferred.resolve(user);
-        }).error(function (error, status) {
-            deferred.reject(error);
-            console.log("Error getAuthenticatedUser", error);
-            removeAuthTokens();
-        });      
+        
+        if ($rootScope.authenticatedUser) {
+        	console.log("already authenticatedUser!!!!!!!!!!!!");
+			//if in root scope already authenticated
+			deferred.resolve($rootScope.authenticatedUser);
+        } else if (unauthorizedScreen) {	
+        	console.log("already checked!!!!!!!!!!!!!");
+			// if not forcing authentication and check in last x period then reject
+			// to avoid lots of requests to server
+			deferred.reject();
+        } else {
+        	console.log("force checked to see if authenticated");
+
+	        $http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
+	          .success(function(response) {
+	          	var user = response.user;
+	          	$rootScope.$broadcast('event:auth', user);
+	            createAuthTokens(user);
+	            deferred.resolve(user);
+	        }).error(function (error, status) {
+	            deferred.reject(error);
+	            console.log("Error getAuthenticatedUser", error);
+	            removeAuthTokens();
+	        });	
+        }  
         return deferred.promise;
     },
 
@@ -546,90 +563,6 @@ angular.module('common.services')
         url: domainName + '/api/locations', 
         method: "GET",
         params: {latitude: latitude, longitude: longitude}
-      })
-      .success(function(response) {
-        deferred.resolve(response);
-      })
-      .error(function (error, status) {
-        deferred.reject(error);
-      });
-      return deferred.promise;
-    }
-
-  };
-}]);
-angular.module('common.services')
-
-.factory('Proposition', ['$q', '$http', 'domainName', function($q, $http, domainName) {
-
-  var site = {};
-
-  return {
-
-    storeSite: function(data) {
-      site = data;
-    },
-
-    getSite: function() {
-      return site;
-    },
-
-    customers: function () {
-      var deferred = $q.defer();
-      $http({
-        url: domainName + '/api/propositions', 
-        method: "GET",
-        dataType: 'json',
-        data: '',
-        params: {customers: true},
-        interceptAuth: true,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .success(function(response) {
-        deferred.resolve(response);
-      })
-      .error(function (error, status) {
-        deferred.reject(error);
-      });
-      return deferred.promise;
-    },
-
-    replies: function() {
-      var deferred = $q.defer();
-      $http({
-        url: domainName + '/api/propositions', 
-        method: "GET",
-        dataType: 'json',
-        data: '',
-        params: {replies: true},
-        interceptAuth: true,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .success(function(response) {
-        deferred.resolve(response);
-      })
-      .error(function (error, status) {
-        deferred.reject(error);
-      });
-      return deferred.promise;
-    },
-
-    chat: function(proposition_id, last_message_received) {
-      var deferred = $q.defer();
-      $http({
-        url: domainName + '/api/propositions/' + proposition_id,
-        method: "GET",
-        dataType: 'json',
-        data: '',
-        params: {chat: true, after: last_message_received },
-        interceptAuth: true,
-        headers: {
-          "Content-Type": "application/json"
-        }
       })
       .success(function(response) {
         deferred.resolve(response);

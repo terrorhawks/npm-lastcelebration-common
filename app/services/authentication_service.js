@@ -150,19 +150,36 @@ angular.module('common.services')
   		createAuthTokens(user);
   	},
 
-  	getAuthenticatedUser: function (unauthorizedScreen) {
+
+
+	getAuthenticatedUser: function (unauthorizedScreen) {
+
         var deferred = $q.defer();
-        $http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
-          .success(function(response) {
-          	var user = response.user;
-          	$rootScope.$broadcast('event:auth', user);
-            createAuthTokens(user);
-            deferred.resolve(user);
-        }).error(function (error, status) {
-            deferred.reject(error);
-            console.log("Error getAuthenticatedUser", error);
-            removeAuthTokens();
-        });      
+        
+        if ($rootScope.authenticatedUser) {
+        	console.log("already authenticatedUser!!!!!!!!!!!!");
+			//if in root scope already authenticated
+			deferred.resolve($rootScope.authenticatedUser);
+        } else if (unauthorizedScreen) {	
+        	console.log("already checked!!!!!!!!!!!!!");
+			// if not forcing authentication and check in last x period then reject
+			// to avoid lots of requests to server
+			deferred.reject();
+        } else {
+        	console.log("force checked to see if authenticated");
+
+	        $http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
+	          .success(function(response) {
+	          	var user = response.user;
+	          	$rootScope.$broadcast('event:auth', user);
+	            createAuthTokens(user);
+	            deferred.resolve(user);
+	        }).error(function (error, status) {
+	            deferred.reject(error);
+	            console.log("Error getAuthenticatedUser", error);
+	            removeAuthTokens();
+	        });	
+        }  
         return deferred.promise;
     },
 

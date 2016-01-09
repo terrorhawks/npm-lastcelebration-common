@@ -17,7 +17,7 @@ angular.module('common.services')
             var deferred = $q.defer();
             var company = $localstorage.getObject(APP_COMPANY_KEY, true);
             if (company) {
-                console.log("Company retrieve from cache.");
+                // console.log("Company retrieve from cache.");
                 deferred.resolve(company);
             } else {
                 getCompanyFromServer(companyUUID, deferred);
@@ -32,7 +32,7 @@ angular.module('common.services')
                 var site_found = _.find(company.sites, function(c_site) {
                     c_site.id = site.id;
                 });
-                console.log("update site in cache", site_found);
+                // console.log("update site in cache", site_found);
                 //if not found, then it will expire the site from the cache, otherwise update it.
                 setChosenSite(site_found);
             }
@@ -42,7 +42,7 @@ angular.module('common.services')
                 Company.get({uuid: companyUUID}).$promise.then(function (company) {
                     $localstorage.setObject(APP_COMPANY_KEY, company, millisecondsUntilMidnight());
                     refreshCachedSite(company);
-                    console.log("Company retrieve from server and cached.");
+                    // console.log("Company retrieve from server and cached.");
                     deferred.resolve(company);
                 }, function (error) {
                     console.log("Failed to retrieve company", error);
@@ -54,7 +54,7 @@ angular.module('common.services')
             var deferred = $q.defer();
             var chosenSite = getChosenSite();
             if (chosenSite !== undefined) {
-                console.log("site already in cache", chosenSite.name);
+                // console.log("site already in cache", chosenSite.name);
                 deferred.resolve(chosenSite);
             } else {
                 getCompany(companyUUID).then(function (company) {
@@ -85,7 +85,7 @@ angular.module('common.services')
         };
 
         var setChosenMenu = function (menu) {
-            console.log("set menu cache for", millisecondsUntilMidnight(), menu);
+            // console.log("set menu cache for", millisecondsUntilMidnight(), menu);
             $localstorage.setObject(APP_MENU_KEY, menu, millisecondsUntilMidnight());
         };
 
@@ -97,8 +97,8 @@ angular.module('common.services')
                     getCompany(companyUUID).then(function (company) {
                         $rootScope.company = company;
                         deferred.resolve(company);
-                    }, function () {
-                        deferred.reject();
+                    }, function (error) {
+                        deferred.reject(error);
                     });
                 } else {
                     deferred.resolve($rootScope.company);
