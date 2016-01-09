@@ -261,6 +261,9 @@ angular.module('common.services')
 	     $rootScope.authenticatedUser = undefined;
      };
 
+    var timeToExpire = 0;
+    var cacheTime = 300000; //5mins
+
 	var authenticateFBUser = function(facebookData, authResponse) {
 		var q = $q.defer();
 	    var authenticatedUser = {
@@ -401,24 +404,21 @@ angular.module('common.services')
         var deferred = $q.defer();
         
         if ($rootScope.authenticatedUser) {
-        	console.log("already authenticatedUser!!!!!!!!!!!!");
-			//if in root scope already authenticated
+        	//if in root scope already authenticated
 			deferred.resolve($rootScope.authenticatedUser);
-        } else if (unauthorizedScreen) {	
-        	console.log("already checked!!!!!!!!!!!!!");
-			// if not forcing authentication and check in last x period then reject
+        } else if (unauthorizedScreen && Date.now() <= timeExpiry) {	
+		 	// if not forcing authentication and check in last x period then reject
 			// to avoid lots of requests to server
 			deferred.reject();
         } else {
-        	console.log("force checked to see if authenticated");
-
-	        $http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
+        	$http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
 	          .success(function(response) {
 	          	var user = response.user;
 	          	$rootScope.$broadcast('event:auth', user);
 	            createAuthTokens(user);
 	            deferred.resolve(user);
 	        }).error(function (error, status) {
+	        	timeToExpire = new Date(Date.now() + cacheTime).getTime();
 	            deferred.reject(error);
 	            console.log("Error getAuthenticatedUser", error);
 	            removeAuthTokens();
