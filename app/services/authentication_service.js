@@ -122,18 +122,18 @@ angular.module('common.services')
 	};
 
 
-   var deferredLogin = function () {
+   var deferredLogin = function (whereNext) {
 	    var defer = $q.defer();
-	    $rootScope.$broadcast('event:login', defer);
+	    $rootScope.$broadcast('event:login', defer, whereNext);
 	    return defer.promise;
    };  
 
   return {
 
   	unAuthorisedDeferToLogin: function(event, xhr, deferred) {
-	    console.log("unAuthorisedDeferToLogin", event, xhr, deferred, $state, $state.current, $state.params);
-
-  		deferredLogin().then(function () {
+	    console.log("unAuthorisedDeferToLogin", event, xhr, deferred, $state, $state.params.whereNext);
+	    var whereNext = $state.params.whereNext;
+  		deferredLogin(whereNext).then(function () {
 	        // Successfully logged in.
 	        // Redo the original request.
 	        return $http(xhr.config);
