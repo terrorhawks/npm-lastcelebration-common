@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('AuthenticationService', ['Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', function(Facebook, $rootScope, $http, domainName, $q, $window, Auth) {
+.factory('AuthenticationService', ['Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', function(Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state) {
 
 	var createAuthTokens = function (user) {
 		$window.sessionStorage.token = user.token;
@@ -131,12 +131,13 @@ angular.module('common.services')
   return {
 
   	unAuthorisedDeferToLogin: function(event, xhr, deferred) {
+	    console.log("unAuthorisedDeferToLogin", event, xhr, deferred, $state, $state.current, $state.params);
+
   		deferredLogin().then(function () {
 	        // Successfully logged in.
 	        // Redo the original request.
 	        return $http(xhr.config);
 	    }, function (error) {
-	    	console.log("unAuthorisedDeferToLogin", deferred);
 	    	deferred.reject(error);
 	    }).then(function(response) {
 	        // Successfully recovered from unauthorized error.
@@ -152,8 +153,6 @@ angular.module('common.services')
   	setAuthTokens: function (user) {
   		createAuthTokens(user);
   	},
-
-
 
 	getAuthenticatedUser: function (unauthorizedScreen) {
 
