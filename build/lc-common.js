@@ -375,6 +375,7 @@ angular.module('common.services')
             console.log("setting cache time to ", timeToExpire);
             $window.localStorage[cacheTimeKey] = timeToExpire;
         }
+        console.log("storing object in cache with key", key);
         $window.localStorage[key] = JSON.stringify(value);
       } else {
         $window.localStorage.removeItem(key);
@@ -392,7 +393,7 @@ angular.module('common.services')
         var timeToExpire = $window.localStorage[cacheTimeKey];
         var timenow = Date.now();
         if (timenow <= timeToExpire) {
-          console.log("not expired yet, get from cache");
+          console.log("not expired yet, get from cache with key", key);
           return getObjectFromStorage(key);
         }  else {
           console.log("cache expired for key", key);
@@ -401,9 +402,9 @@ angular.module('common.services')
           return undefined;
         }
       } else {
+        console.log("get object without checking cache time with key", key);
         return getObjectFromStorage(key);
       }
-      
     }
   };
 
