@@ -329,7 +329,7 @@ angular.module('common.services')
  }]);
 angular.module('common.services')
 
-.factory('$localstorage', ['$window', 'companyUUID', function($window, companyUUID) {
+.factory('$localstorage', ['$window', 'companyRef', function($window, companyRef) {
   
   var getObjectFromStorage = function(key) {
       key = actual_key(key);
@@ -347,7 +347,7 @@ angular.module('common.services')
   };
 
   var actual_key = function(key) {
-    return companyUUID + key;
+    return companyRef + "." + key;
   };
 
   return {
