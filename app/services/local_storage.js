@@ -18,7 +18,8 @@ angular.module('common.services')
   };
 
   var actual_key = function(key) {
-    return companyRef + "." + key;
+    // return companyRef + "." + key;
+    return key;
   };
 
   return {
