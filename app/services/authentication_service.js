@@ -1,18 +1,30 @@
 angular.module('common.services')
 
-.factory('AuthenticationService', ['Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', function(Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state) {
+.factory('AuthenticationService', ['companyRef', '$localstorage','Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', function(companyRef, $localstorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state) {
+
+	var CACHE_TOKEN =           companyRef + '.userAuth.token';
+	var CACHE_EMAIL =           companyRef + '.userAuth.email';
+	var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
+	var CACHE_FACEBOOK_TOKEN =  companyRef + '.userAuth.facebook';
 
 	var createAuthTokens = function (user) {
-		$window.sessionStorage.token = user.token;
-     	$window.sessionStorage.email = user.email;
-     	if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
+		$localstorage.setObject(CACHE_TOKEN, user.token);
+		$localstorage.setObject(CACHE_EMAIL, user.email);
+		if (user.company) $localstorage.setObject(CACHE_COMPANY_UUID, user.company.uuid);
+		
+		// $window.sessionStorage.token = user.token;
+        // $window.sessionStorage.email = user.email;
+        // if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
      	$rootScope.authenticatedUser = user;
      };
 
      var removeAuthTokens = function () {
-		 delete $window.sessionStorage.token;
-	     delete $window.sessionStorage.email;
-	     delete $window.sessionStorage.companyUUID;
+     	$localstorage.setObject(CACHE_TOKEN);
+     	$localstorage.setObject(CACHE_EMAIL);
+     	$localstorage.setObject(CACHE_COMPANY_UUID);
+		// delete $window.sessionStorage.token;
+	    // delete $window.sessionStorage.email;
+	    // delete $window.sessionStorage.companyUUID;
 	     console.log("Destroy current authenticated user");
 	     $rootScope.authenticatedUser = undefined;
      };
@@ -42,7 +54,9 @@ angular.module('common.services')
 	     }).then(function (response) {
 	     	var user = response.data.user;
     		createAuthTokens(user);
-    		$window.sessionStorage.facebookToken = authResponse.accessToken;
+    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN, authResponse.accessToken);
+			console.log("facebook auth", response);
+			// $window.sessionStorage.facebookToken = authResponse.accessToken;
          	$rootScope.$broadcast('event:auth', user);  
 	        q.resolve(user); 
 	     }, function(e) {
@@ -86,7 +100,8 @@ angular.module('common.services')
 		Facebook.loginStatus().then(function (response) {
 			console.log(response);
 			if (!response.authResponse) {
-				delete $window.sessionStorage.facebookToken;
+				$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
+				// delete $window.sessionStorage.facebookToken;
 				q.reject();
 			}
 			Facebook.logout().then( function() {
@@ -97,7 +112,8 @@ angular.module('common.services')
 	    		console.log(e);
 	      		q.reject(e);
 	    	}).finally(function () {
-	    		delete $window.sessionStorage.facebookToken;
+	    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
+	    		// delete $window.sessionStorage.facebookToken;
 	    	});
 		}, function (e) {
 			console.log("Unsuccessful facebook logout, not logged in");

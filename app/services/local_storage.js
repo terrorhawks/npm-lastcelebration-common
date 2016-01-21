@@ -1,9 +1,8 @@
 angular.module('common.services')
 
-.factory('$localstorage', ['$window', 'companyRef', function($window, companyRef) {
+.factory('$localstorage', ['$window', function($window) {
   
   var getObjectFromStorage = function(key) {
-      key = actual_key(key);
       var cached_object = $window.localStorage[key];
       if (cached_object) {
         try {
@@ -17,24 +16,9 @@ angular.module('common.services')
       }
   };
 
-  var keys = {};
-
-  var actual_key = function(key) {
-    // var ref = companyRef + key;
-    // var foundKey = keys[ref];
-    // if (foundKey) {
-    //   return foundKey;
-    // } else {
-    //   keys[ref] = ref;
-    //   return ref;
-    // }
-    return key;
-  };
-
   return {
     
     set: function(key, value) {
-      key = actual_key(key);
       if (value) {
         $window.localStorage[key] = value;
       } else {
@@ -43,12 +27,10 @@ angular.module('common.services')
     },
 
     get: function(key, defaultValue) {
-      key = actual_key(key);
       return $window.localStorage[key] || defaultValue;
     },
 
     setObject: function(key, value, cacheTime) {
-      key = actual_key(key);
       if (value) {
         if (cacheTime && cacheTime>0) {
             var timeToExpire = new Date(Date.now() + cacheTime).getTime();
@@ -68,7 +50,6 @@ angular.module('common.services')
     },
 
     getObject: function(key, checkCacheExpiry) {
-      key = actual_key(key);
       if (checkCacheExpiry) {
         var cacheTimeKey = key + ".cacheTime";
         var timeToExpire = $window.localStorage[cacheTimeKey];

@@ -54,23 +54,32 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function($rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function(companyRef, $localstorage,$rootScope, $q, $window, domainName, companyUUID) {
+    
+    var CACHE_TOKEN =           companyRef + '.userAuth.token';
+    var CACHE_EMAIL =           companyRef + '.userAuth.email';
+    var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
+
   return {
     request: function (config) {
       var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
-      var have_a_session_token = $window.sessionStorage.token;
+      var have_a_session_token = $localstorage.getObject(CACHE_TOKEN);
+      // var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && is_a_request_to_original_domain) {
-        //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
-        config.headers.Authorization  = $window.sessionStorage.token;
-        config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+        // NOT REQUIRED config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
+        // config.headers.Authorization  = $window.sessionStorage.token;
+        // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+        config.headers.Authorization  = have_a_session_token;
+        config.headers['X-API-EMAIL'] = $localstorage.getObject(CACHE_EMAIL);
       }
       if (companyUUID) {
           // mobile apps use pre-configured companyUUID
           config.headers['X-COMPANY-UUID'] = companyUUID;
       } else {
           // dashboard uses companyUUID from authenticated user
-          config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
+           config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
+          // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
       }
 
       return config;
@@ -92,19 +101,31 @@ angular.module('common.services')
 });
 angular.module('common.services')
 
-.factory('AuthenticationService', ['Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', function(Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state) {
+.factory('AuthenticationService', ['companyRef', '$localstorage','Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', function(companyRef, $localstorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state) {
+
+	var CACHE_TOKEN =           companyRef + '.userAuth.token';
+	var CACHE_EMAIL =           companyRef + '.userAuth.email';
+	var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
+	var CACHE_FACEBOOK_TOKEN =  companyRef + '.userAuth.facebook';
 
 	var createAuthTokens = function (user) {
-		$window.sessionStorage.token = user.token;
-     	$window.sessionStorage.email = user.email;
-     	if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
+		$localstorage.setObject(CACHE_TOKEN, user.token);
+		$localstorage.setObject(CACHE_EMAIL, user.email);
+		if (user.company) $localstorage.setObject(CACHE_COMPANY_UUID, user.company.uuid);
+		
+		// $window.sessionStorage.token = user.token;
+        // $window.sessionStorage.email = user.email;
+        // if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
      	$rootScope.authenticatedUser = user;
      };
 
      var removeAuthTokens = function () {
-		 delete $window.sessionStorage.token;
-	     delete $window.sessionStorage.email;
-	     delete $window.sessionStorage.companyUUID;
+     	$localstorage.setObject(CACHE_TOKEN);
+     	$localstorage.setObject(CACHE_EMAIL);
+     	$localstorage.setObject(CACHE_COMPANY_UUID);
+		// delete $window.sessionStorage.token;
+	    // delete $window.sessionStorage.email;
+	    // delete $window.sessionStorage.companyUUID;
 	     console.log("Destroy current authenticated user");
 	     $rootScope.authenticatedUser = undefined;
      };
@@ -134,7 +155,9 @@ angular.module('common.services')
 	     }).then(function (response) {
 	     	var user = response.data.user;
     		createAuthTokens(user);
-    		$window.sessionStorage.facebookToken = authResponse.accessToken;
+    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN, authResponse.accessToken);
+			console.log("facebook auth", response);
+			// $window.sessionStorage.facebookToken = authResponse.accessToken;
          	$rootScope.$broadcast('event:auth', user);  
 	        q.resolve(user); 
 	     }, function(e) {
@@ -178,7 +201,8 @@ angular.module('common.services')
 		Facebook.loginStatus().then(function (response) {
 			console.log(response);
 			if (!response.authResponse) {
-				delete $window.sessionStorage.facebookToken;
+				$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
+				// delete $window.sessionStorage.facebookToken;
 				q.reject();
 			}
 			Facebook.logout().then( function() {
@@ -189,7 +213,8 @@ angular.module('common.services')
 	    		console.log(e);
 	      		q.reject(e);
 	    	}).finally(function () {
-	    		delete $window.sessionStorage.facebookToken;
+	    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
+	    		// delete $window.sessionStorage.facebookToken;
 	    	});
 		}, function (e) {
 			console.log("Unsuccessful facebook logout, not logged in");
@@ -329,10 +354,9 @@ angular.module('common.services')
  }]);
 angular.module('common.services')
 
-.factory('$localstorage', ['$window', 'companyRef', function($window, companyRef) {
+.factory('$localstorage', ['$window', function($window) {
   
   var getObjectFromStorage = function(key) {
-      key = actual_key(key);
       var cached_object = $window.localStorage[key];
       if (cached_object) {
         try {
@@ -346,24 +370,9 @@ angular.module('common.services')
       }
   };
 
-  var keys = {};
-
-  var actual_key = function(key) {
-    // var ref = companyRef + key;
-    // var foundKey = keys[ref];
-    // if (foundKey) {
-    //   return foundKey;
-    // } else {
-    //   keys[ref] = ref;
-    //   return ref;
-    // }
-    return key;
-  };
-
   return {
     
     set: function(key, value) {
-      key = actual_key(key);
       if (value) {
         $window.localStorage[key] = value;
       } else {
@@ -372,12 +381,10 @@ angular.module('common.services')
     },
 
     get: function(key, defaultValue) {
-      key = actual_key(key);
       return $window.localStorage[key] || defaultValue;
     },
 
     setObject: function(key, value, cacheTime) {
-      key = actual_key(key);
       if (value) {
         if (cacheTime && cacheTime>0) {
             var timeToExpire = new Date(Date.now() + cacheTime).getTime();
@@ -397,7 +404,6 @@ angular.module('common.services')
     },
 
     getObject: function(key, checkCacheExpiry) {
-      key = actual_key(key);
       if (checkCacheExpiry) {
         var cacheTimeKey = key + ".cacheTime";
         var timeToExpire = $window.localStorage[cacheTimeKey];

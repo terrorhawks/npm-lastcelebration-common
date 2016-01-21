@@ -1,22 +1,31 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function($rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function(companyRef, $localstorage,$rootScope, $q, $window, domainName, companyUUID) {
+    
+    var CACHE_TOKEN =           companyRef + '.userAuth.token';
+    var CACHE_EMAIL =           companyRef + '.userAuth.email';
+    var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
+
   return {
     request: function (config) {
       var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
-      var have_a_session_token = $window.sessionStorage.token;
+      var have_a_session_token = $localstorage.getObject(CACHE_TOKEN);
+      // var have_a_session_token = $window.sessionStorage.token;
       config.headers = config.headers || {};
       if (have_a_session_token && is_a_request_to_original_domain) {
-        //config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
-        config.headers.Authorization  = $window.sessionStorage.token;
-        config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+        // NOT REQUIRED config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
+        // config.headers.Authorization  = $window.sessionStorage.token;
+        // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+        config.headers.Authorization  = have_a_session_token;
+        config.headers['X-API-EMAIL'] = $localstorage.getObject(CACHE_EMAIL);
       }
       if (companyUUID) {
           // mobile apps use pre-configured companyUUID
           config.headers['X-COMPANY-UUID'] = companyUUID;
       } else {
           // dashboard uses companyUUID from authenticated user
-          config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
+           config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
+          // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
       }
 
       return config;
