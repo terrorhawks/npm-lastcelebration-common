@@ -101,7 +101,7 @@ angular.module('common.services')
 });
 angular.module('common.services')
 
-.factory('AuthenticationService', ['companyRef', '$localstorage','Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', function(companyRef, $localstorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state) {
+.factory('AuthenticationService', ['companyRef', '$localstorage','Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', '$timeout', function(companyRef, $localstorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state, $timeout) {
 
 	var CACHE_TOKEN =           companyRef + '.userAuth.token';
 	var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -185,14 +185,19 @@ angular.module('common.services')
 	var facebookSignin = function (deferred) {
 		console.log("Facebook sign-in");
 		Facebook.login()
-		    .then(function(success) {
+	    	.then(function(success) {
 		      console.log("logged in", success);
 		      facebookMe(deferred, success);
 		    }, function (e) {
 		      console.log("logged in failed");
 		      console.log(e);
 		      deferred.reject(e);
-		    });
+		});
+		$timeout(function () {
+			if (deferred.promise.$$state.status === 0) {
+				deferred.reject("Unable to authenticate with facebook, please try again");
+			}
+		}, 30000);
 	};
 
 	var facebookLogout = function () { 
