@@ -89,9 +89,7 @@ angular.module('common.services')
              config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
             // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
         }
-    } else {
-      console.log("do not add tokens for request " , config.url);
-    } 
+    }
 
       return config;
     },
