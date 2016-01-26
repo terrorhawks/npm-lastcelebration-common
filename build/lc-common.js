@@ -62,6 +62,9 @@ angular.module('common.services')
 
   return {
     request: function (config) {
+      
+      console.log("request interceptor", config);
+
       var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
       var have_a_session_token = $localstorage.getObject(CACHE_TOKEN);
       // var have_a_session_token = $window.sessionStorage.token;
