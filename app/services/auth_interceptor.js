@@ -43,7 +43,7 @@ angular.module('common.services')
       return response || $q.when(response);
     },
     responseError: function(rejection) {
-      console.log("Response failure", rejection);
+      console.log("Response failure", JSON.stringify(rejection));
       // if (rejection.status === 500) {
       //   $rootScope.$broadcast("redirect:error");
       // }

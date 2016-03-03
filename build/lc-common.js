@@ -97,7 +97,7 @@ angular.module('common.services')
       return response || $q.when(response);
     },
     responseError: function(rejection) {
-      console.log("Response failure", rejection);
+      console.log("Response failure", JSON.stringify(rejection));
       // if (rejection.status === 500) {
       //   $rootScope.$broadcast("redirect:error");
       // }
@@ -165,7 +165,7 @@ angular.module('common.services')
 	     	var user = response.data.user;
     		createAuthTokens(user);
     		$localstorage.setObject(CACHE_FACEBOOK_TOKEN, authResponse.accessToken);
-			console.log("facebook auth", response);
+			console.log("facebook auth", JSON.stringify(response));
 			// $window.sessionStorage.facebookToken = authResponse.accessToken;
          	$rootScope.$broadcast('event:auth', user);  
 	        q.resolve(user); 
@@ -177,16 +177,16 @@ angular.module('common.services')
 
 	var facebookMe = function (deferred, successSignin) {
 		Facebook.me().then(function (user) {
-			console.log("facebookMe user", user);
+			console.log("facebookMe user", JSON.stringify(user));
 	    	authenticateFBUser(user, successSignin.authResponse).then(function (user) {
-	    		console.log("authenticateFBUser", user);
+	    		console.log("authenticateFBUser", JSON.stringify(user));
 	    		deferred.resolve(user);
 	    	}, function (e) {
-	    		console.log("creating user from facebook creds failed" ,e);
+	    		console.log("creating user from facebook creds failed" , JSON.stringify(e));
 	    		deferred.reject(e);
 	    	});		    	
 		}, function (e) {
-			console.log("accessing 'me' in facebook failed" ,e);
+			console.log("accessing 'me' in facebook failed" , JSON.stringify(e));
 			deferred.reject(e);
 		});	
 	};
@@ -198,8 +198,7 @@ angular.module('common.services')
 		      console.log("logged in", success);
 		      facebookMe(deferred, success);
 		    }, function (e) {
-		      console.log("logged in failed");
-		      console.log(e);
+		      console.log("logged in failed", JSON.stringify(e));
 		      deferred.reject(e);
 		});
 		$timeout(function () {
@@ -223,16 +222,14 @@ angular.module('common.services')
 	    		console.log("Successful facebook logout");
 	      		q.resolve();
 	    	}, function(e) {
-	    		console.log("Unsuccessful facebook logout");
-	    		console.log(e);
+	    		console.log("Unsuccessful facebook logout", JSON.stringify(e));
 	      		q.reject(e);
 	    	}).finally(function () {
 	    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
 	    		// delete $window.sessionStorage.facebookToken;
 	    	});
 		}, function (e) {
-			console.log("Unsuccessful facebook logout, not logged in");
-			console.log(e);
+			console.log("Unsuccessful facebook logout, not logged in", JSON.stringify(e));
 		});
 		return q.promise; 
 	};
@@ -306,7 +303,7 @@ angular.module('common.services')
 	        }).error(function (error, status) {
 	        	timeToExpire = new Date(Date.now() + cacheTime).getTime();
 	            deferred.reject(error);
-	            console.log("Error getAuthenticatedUser", error);
+	            console.log("Error getAuthenticatedUser", JSON.stringify(error));
 	            removeAuthTokens();
 	        });	
         }  
