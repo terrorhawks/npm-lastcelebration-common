@@ -97,9 +97,12 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
                 var file_uri = s3Uri + file;
                 console.log("Uploading file to s3.. ", file_uri);
                 var fd = createFormData(file,  options, image_uri);
+                console.log("postFormData", JSON.stringify(s3Uri), JSON.stringify(fd));
                 postFormData(s3Uri, fd).then(function (response) {
+                    console.log("Successful load to S3", JSON.stringify(response));
                     deferred.resolve(file_uri);
                 }, function (error) {
+                    console.log("Failed to load to S3", JSON.stringify(error));
                     deferred.reject(error);
                 });
             }, function(error) {

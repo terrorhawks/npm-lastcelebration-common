@@ -74,20 +74,22 @@ angular.module('common.services')
         var have_a_session_token = $localstorage.getObject(CACHE_TOKEN);
         // var have_a_session_token = $window.sessionStorage.token;
         config.headers = config.headers || {};
-        if (have_a_session_token && is_a_request_to_original_domain) {
-          // NOT REQUIRED config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
-          // config.headers.Authorization  = $window.sessionStorage.token;
-          // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
-          config.headers.Authorization  = have_a_session_token;
-          config.headers['X-API-EMAIL'] = $localstorage.getObject(CACHE_EMAIL);
-        }
-        if (companyUUID) {
-            // mobile apps use pre-configured companyUUID
-            config.headers['X-COMPANY-UUID'] = companyUUID;
-        } else {
-            // dashboard uses companyUUID from authenticated user
-             config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
-            // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
+        if (is_a_request_to_original_domain) {
+          if (have_a_session_token) {
+            // NOT REQUIRED config.headers.Authorization = 'Bearer ' + $window.sessionStorage.token;
+            // config.headers.Authorization  = $window.sessionStorage.token;
+            // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
+            config.headers.Authorization  = have_a_session_token;
+            config.headers['X-API-EMAIL'] = $localstorage.getObject(CACHE_EMAIL);
+          }
+          if (companyUUID) {
+              // mobile apps use pre-configured companyUUID
+              config.headers['X-COMPANY-UUID'] = companyUUID;
+          } else {
+              // dashboard uses companyUUID from authenticated user
+               config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
+              // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
+          }
         }
     }
 
@@ -558,9 +560,12 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
                 var file_uri = s3Uri + file;
                 console.log("Uploading file to s3.. ", file_uri);
                 var fd = createFormData(file,  options, image_uri);
+                console.log("postFormData", JSON.stringify(s3Uri), JSON.stringify(fd));
                 postFormData(s3Uri, fd).then(function (response) {
+                    console.log("Successful load to S3", JSON.stringify(response));
                     deferred.resolve(file_uri);
                 }, function (error) {
+                    console.log("Failed to load to S3", JSON.stringify(error));
                     deferred.reject(error);
                 });
             }, function(error) {
