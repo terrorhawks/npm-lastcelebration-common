@@ -482,6 +482,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
     }
 
     function createFormData(key, options, contents) {
+        console.log("createFormData", key, JSON.stringify(options), contents);
         var fd = new FormData();
         fd.append('key', key);
         fd.append('acl', 'public-read');
@@ -493,16 +494,44 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         return fd;
     }
 
-    function dataURItoBlob(b64Data) {
-        var byteCharacters = atob(b64Data);
-        var byteNumbers = new Array(byteCharacters.length);
-        for (var i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+    function dataURLtoBlob(dataURI) {
+
+        var byteString;
+        var arrayBuffer;
+        var intArray;
+        var i;
+        var mimeString;
+        var bb;
+
+        if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+            // Convert base64 to raw binary data held in a string:
+            byteString = atob(dataURI.split(',')[1]);
+        } else {
+            // Convert base64/URLEncoded data component to raw binary data:
+            byteString = decodeURIComponent(dataURI.split(',')[1]);
         }
-        var byteArray = new Uint8Array(byteNumbers);
-        var blob = new Blob([byteArray], {type: 'image/jpeg'});
-        return blob;
+        // Write the bytes of the string to an ArrayBuffer:
+        arrayBuffer = new ArrayBuffer(byteString.length);
+        intArray = new Uint8Array(arrayBuffer);
+        for (i = 0; i < byteString.length; i += 1) {
+            intArray[i] = byteString.charCodeAt(i);
+        }
+        // Separate out the mime component:
+        mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        // Write the ArrayBuffer (or ArrayBufferView) to a blob:
+        return new Blob([intArray],{type: mimeString});
     }
+
+    // function dataURItoBlob(b64Data) {
+    //     var byteCharacters = atob(b64Data);
+    //     var byteNumbers = new Array(byteCharacters.length);
+    //     for (var i = 0; i < byteCharacters.length; i++) {
+    //         byteNumbers[i] = byteCharacters.charCodeAt(i);
+    //     }
+    //     var byteArray = new Uint8Array(byteNumbers);
+    //     var blob = new Blob([byteArray], {type: 'image/jpeg'});
+    //     return blob;
+    // }
 
     function getAWSPolicy(uploaded_from) {
         var deferred = $q.defer();
