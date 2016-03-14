@@ -151,6 +151,10 @@ angular.module('common.services')
   	unAuthorisedDeferToLogin: function(event, xhr, deferred) {
 	    console.log("unAuthorisedDeferToLogin", event, xhr, deferred, $state, $state.params.whereNext);
 	    var whereNext = $state.params.whereNext;
+	    if (whereNext === undefined) {
+	    	//if no next state defined, then default to current state (incase of auth interception)
+	    	whereNext = $state.current.name;
+	    }
   		deferredLogin(whereNext).then(function () {
 	        // Successfully logged in.
 	        // Redo the original request.
