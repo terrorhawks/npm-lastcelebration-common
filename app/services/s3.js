@@ -6,16 +6,10 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
     var ttl_in_ms = 50000;
 
     function postFormData(uri, formData) {
-        var deferred = $q.defer();
-        $http.post(uri, formData, {
+        return $http.post(uri, formData, {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
-        }).success(function (response, status) {
-            deferred.resolve(response);
-        }).error(function (error, status) {
-            deferred.reject(error);
         });
-        return deferred.promise;
     }
 
     function createFormData(key, options, contents) {
@@ -77,12 +71,11 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         } else {
             var uriParams = uploaded_from === 'signup' ? '?signup=true' : '';
             $http.get(domainName + '/api/s3' + uriParams)
-                .success(function(response) {
+                .then(function(response) {
                     s3_config = response;
                     purge_date = new Date().getTime() + ttl_in_ms;
                     deferred.resolve(response);
-                })
-                .error(function (error, status) {
+                }, function (error, status) {
                     deferred.reject(error);
                 });
         }

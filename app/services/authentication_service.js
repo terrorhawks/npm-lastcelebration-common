@@ -189,12 +189,12 @@ angular.module('common.services')
 			deferred.reject();
         } else {
         	$http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
-	          .success(function(response) {
+	          .then(function(response) {
 	          	var user = response.user;
 	          	$rootScope.$broadcast('event:auth', user);
 	            createAuthTokens(user);
 	            deferred.resolve(user);
-	        }).error(function (error, status) {
+	        }, function (error, status) {
 	        	timeToExpire = new Date(Date.now() + cacheTime).getTime();
 	            deferred.reject(error);
 	            console.log("Error getAuthenticatedUser", JSON.stringify(error));

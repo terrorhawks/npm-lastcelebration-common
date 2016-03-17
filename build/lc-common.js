@@ -8,8 +8,7 @@ angular.module('common.services')
 .factory('Account', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 return {
   changePassword: function (password, device) {
-    var deferred = $q.defer();
-    $http({
+    return $http({
       url: domainName + '/api/accounts',
       method: "POST",
       dataType: 'json',
@@ -19,19 +18,11 @@ return {
       headers: {
         "Content-Type": "application/json"
       }
-    })
-      .success(function (response) {
-        deferred.resolve(response);
-      })
-      .error(function (error, status) {
-        deferred.reject(error, status);
-      });
-    return deferred.promise;
+    });
   },
 
   resetPassword: function (email, device) {
-    var deferred = $q.defer();
-    $http({
+    return $http({
       url: domainName + '/api/accounts',
       method: "POST",
       dataType: 'json',
@@ -41,14 +32,7 @@ return {
       headers: {
         "Content-Type": "application/json"
       }
-    })
-      .success(function (response) {
-        deferred.resolve(response);
-      })
-      .error(function (error, status) {
-        deferred.reject(error, status);
-      });
-    return deferred.promise;
+    });
   }
 };
 }]);
@@ -301,12 +285,12 @@ angular.module('common.services')
 			deferred.reject();
         } else {
         	$http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
-	          .success(function(response) {
+	          .then(function(response) {
 	          	var user = response.user;
 	          	$rootScope.$broadcast('event:auth', user);
 	            createAuthTokens(user);
 	            deferred.resolve(user);
-	        }).error(function (error, status) {
+	        }, function (error, status) {
 	        	timeToExpire = new Date(Date.now() + cacheTime).getTime();
 	            deferred.reject(error);
 	            console.log("Error getAuthenticatedUser", JSON.stringify(error));
@@ -448,19 +432,11 @@ angular.module('common.services')
  
   return {
     getClosestPostcode: function(latitude, longitude) {
-      var deferred = $q.defer();
-      $http({
+      return $http({
         url: domainName + '/api/locations', 
         method: "GET",
         params: {latitude: latitude, longitude: longitude}
-      })
-      .success(function(response) {
-        deferred.resolve(response);
-      })
-      .error(function (error, status) {
-        deferred.reject(error);
       });
-      return deferred.promise;
     }
 
   };
@@ -473,16 +449,10 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
     var ttl_in_ms = 50000;
 
     function postFormData(uri, formData) {
-        var deferred = $q.defer();
-        $http.post(uri, formData, {
+        return $http.post(uri, formData, {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
-        }).success(function (response, status) {
-            deferred.resolve(response);
-        }).error(function (error, status) {
-            deferred.reject(error);
         });
-        return deferred.promise;
     }
 
     function createFormData(key, options, contents) {
@@ -544,12 +514,11 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
         } else {
             var uriParams = uploaded_from === 'signup' ? '?signup=true' : '';
             $http.get(domainName + '/api/s3' + uriParams)
-                .success(function(response) {
+                .then(function(response) {
                     s3_config = response;
                     purge_date = new Date().getTime() + ttl_in_ms;
                     deferred.resolve(response);
-                })
-                .error(function (error, status) {
+                }, function (error, status) {
                     deferred.reject(error);
                 });
         }
