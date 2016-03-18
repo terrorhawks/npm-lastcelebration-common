@@ -238,15 +238,23 @@ angular.module('common.services')
 	facebookLogin: function () {
 		console.log("facebook login");
 		var deferred = $q.defer();
-		
-		Facebook.loginStatus().then(function (response) {
-			if (response.status === 'connected') {
-				console.log("facebook already logged in " , response);
-				facebookMe(deferred, response);
-			} else {
-				console.log("Facebook, not logged-in");
-				facebookSignin(deferred);
-			}
+		console.log("call FB loginStatus", JSON.stringify(Facebook));
+		var loginStatus = Facebook.loginStatus();
+		console.log("call FB loginStatus callback", JSON.stringify(loginStatus));
+		loginStatus.then(function (response) {
+			try {
+				console.log("loginStatus callback!");
+				if (response.status === 'connected') {
+					console.log("facebook already logged in " , response);
+					facebookMe(deferred, response);
+				} else {
+					console.log("Facebook, not logged-in");
+					facebookSignin(deferred);
+				}
+
+			} catch (e) {
+				console.error("Failed to check login status", JSON.stringify(e));
+			}	 
 		}, function (e) {
 			console.log("Facebook, login failing", e);
 			deferred.reject(e);
