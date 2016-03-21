@@ -2,13 +2,13 @@ angular.module('common.services')
 
 .factory('Account', ['$q', '$http', 'domainName', function($q, $http, domainName) {
 return {
-  changePassword: function (password, device) {
+  changePassword: function (password, password_confirmation) {
     return $http({
       url: domainName + '/api/accounts',
       method: "POST",
       dataType: 'json',
       data: {password: password,
-             device: device},
+             password_confirmation: password_confirmation},
       params: {'change_password': true},
       headers: {
         "Content-Type": "application/json"
@@ -16,13 +16,12 @@ return {
     });
   },
 
-  resetPassword: function (email, device) {
+  resetPassword: function (email) {
     return $http({
       url: domainName + '/api/accounts',
       method: "POST",
       dataType: 'json',
-      data: {email: email,
-             device: device},
+      data: {email: email},
       params: {'reset_password': true},
       headers: {
         "Content-Type": "application/json"
