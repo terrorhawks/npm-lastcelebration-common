@@ -238,7 +238,7 @@ angular.module('common.services')
 	facebookLogin: function () {
 		console.log("facebook login");
 		var deferred = $q.defer();
-		console.log("call FB loginStatus", JSON.stringify(Facebook));
+		console.log("call FB loginStatus", Facebook);
 		var loginStatus = Facebook.loginStatus();
 		console.log("call FB loginStatus callback", JSON.stringify(loginStatus));
 		loginStatus.then(function (response) {
