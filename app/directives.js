@@ -125,19 +125,19 @@ angular.module('common.directives')
    };
 })
 
-.directive('booking', function($state, $stateParams, Offer, $localstorage) {
+.directive('booking', function($state, $stateParams, Offer, $hyperfoodstorage) {
     return {
       restrict: 'A',
       link: function ($scope, element) {
         element.bind('click', function () {
-          var propositionId = $localstorage.get('currentPropositionId');
+          var propositionId = $hyperfoodstorage.get('currentPropositionId');
           Offer.query({proposition_id: propositionId}, function (offers) {
             if (offers.length == 1) {
               var offer = offers[0];
-              $localstorage.setObject('offer', offer);
+              $hyperfoodstorage.setObject('offer', offer);
               $state.go('youthfully.booking', {offerId: offer.id});
             } else if (offers.length > 1) {
-              $localstorage.setObject('offers', offers);
+              $hyperfoodstorage.setObject('offers', offers);
               $state.go('youthfully.offers');
             } else {
               //shouldn't need this situation as we should hide the book button

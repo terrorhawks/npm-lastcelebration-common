@@ -37,7 +37,7 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function(companyRef, $localstorage,$rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -54,7 +54,7 @@ angular.module('common.services')
         console.log("add tokens for request ", config.url);
 
         var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
-        var have_a_session_token = $localstorage.getObject(CACHE_TOKEN);
+        var have_a_session_token = $hyperfoodstorage.getObject(CACHE_TOKEN);
         // var have_a_session_token = $window.sessionStorage.token;
         config.headers = config.headers || {};
         if (is_a_request_to_original_domain) {
@@ -63,14 +63,14 @@ angular.module('common.services')
             // config.headers.Authorization  = $window.sessionStorage.token;
             // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
             config.headers.Authorization  = have_a_session_token;
-            config.headers['X-API-EMAIL'] = $localstorage.getObject(CACHE_EMAIL);
+            config.headers['X-API-EMAIL'] = $hyperfoodstorage.getObject(CACHE_EMAIL);
           }
           if (companyUUID) {
               // mobile apps use pre-configured companyUUID
               config.headers['X-COMPANY-UUID'] = companyUUID;
           } else {
               // dashboard uses companyUUID from authenticated user
-               config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
+               config.headers['X-COMPANY-UUID'] = $hyperfoodstorage.getObject(CACHE_COMPANY_UUID);
               // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
           }
         }
@@ -95,7 +95,7 @@ angular.module('common.services')
 });
 angular.module('common.services')
 
-.factory('AuthenticationService', ['companyRef', '$localstorage','Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', '$timeout', function(companyRef, $localstorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state, $timeout) {
+.factory('AuthenticationService', ['companyRef', '$hyperfoodstorage', '$localStorage', 'Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', '$timeout', function(companyRef, $hyperfoodstorage, $localStorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state, $timeout) {
 
 	var CACHE_TOKEN =           companyRef + '.userAuth.token';
 	var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -103,9 +103,9 @@ angular.module('common.services')
 	var CACHE_FACEBOOK_TOKEN =  companyRef + '.userAuth.facebook';
 
 	var createAuthTokens = function (user) {
-		$localstorage.setObject(CACHE_TOKEN, user.token);
-		$localstorage.setObject(CACHE_EMAIL, user.email);
-		if (user.company) $localstorage.setObject(CACHE_COMPANY_UUID, user.company.uuid);
+		$hyperfoodstorage.setObject(CACHE_TOKEN, user.token);
+		$hyperfoodstorage.setObject(CACHE_EMAIL, user.email);
+		if (user.company) $hyperfoodstorage.setObject(CACHE_COMPANY_UUID, user.company.uuid);
 		
 		// $window.sessionStorage.token = user.token;
         // $window.sessionStorage.email = user.email;
@@ -114,9 +114,9 @@ angular.module('common.services')
      };
 
      var removeAuthTokens = function () {
-     	$localstorage.setObject(CACHE_TOKEN);
-     	$localstorage.setObject(CACHE_EMAIL);
-     	$localstorage.setObject(CACHE_COMPANY_UUID);
+     	$hyperfoodstorage.setObject(CACHE_TOKEN);
+     	$hyperfoodstorage.setObject(CACHE_EMAIL);
+     	$hyperfoodstorage.setObject(CACHE_COMPANY_UUID);
 		// delete $window.sessionStorage.token;
 	    // delete $window.sessionStorage.email;
 	    // delete $window.sessionStorage.companyUUID;
@@ -149,7 +149,7 @@ angular.module('common.services')
 	     }).then(function (response) {
 	     	var user = response.data.user;
     		createAuthTokens(user);
-    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN, authResponse.accessToken);
+    		$hyperfoodstorage.setObject(CACHE_FACEBOOK_TOKEN, authResponse.accessToken);
 			console.log("facebook auth", JSON.stringify(response));
 			// $window.sessionStorage.facebookToken = authResponse.accessToken;
          	$rootScope.$broadcast('event:auth', user);  
@@ -199,7 +199,7 @@ angular.module('common.services')
 		Facebook.loginStatus().then(function (response) {
 			console.log(response);
 			if (!response.authResponse) {
-				$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
+				$hyperfoodstorage.setObject(CACHE_FACEBOOK_TOKEN);
 				// delete $window.sessionStorage.facebookToken;
 				q.reject();
 			}
@@ -210,7 +210,7 @@ angular.module('common.services')
 	    		console.log("Unsuccessful facebook logout", JSON.stringify(e));
 	      		q.reject(e);
 	    	}).finally(function () {
-	    		$localstorage.setObject(CACHE_FACEBOOK_TOKEN);
+	    		$hyperfoodstorage.setObject(CACHE_FACEBOOK_TOKEN);
 	    		// delete $window.sessionStorage.facebookToken;
 	    	});
 		}, function (e) {
@@ -363,7 +363,7 @@ angular.module('common.services')
  }]);
 angular.module('common.services')
 
-.factory('$localstorage', ['$window', function($window) {
+.factory('$hyperfoodstorage', ['$window', function($window) {
   
   var getObjectFromStorage = function(key) {
       var cached_object = $window.localStorage[key];
@@ -926,19 +926,19 @@ angular.module('common.directives')
    };
 })
 
-.directive('booking', function($state, $stateParams, Offer, $localstorage) {
+.directive('booking', function($state, $stateParams, Offer, $hyperfoodstorage) {
     return {
       restrict: 'A',
       link: function ($scope, element) {
         element.bind('click', function () {
-          var propositionId = $localstorage.get('currentPropositionId');
+          var propositionId = $hyperfoodstorage.get('currentPropositionId');
           Offer.query({proposition_id: propositionId}, function (offers) {
             if (offers.length == 1) {
               var offer = offers[0];
-              $localstorage.setObject('offer', offer);
+              $hyperfoodstorage.setObject('offer', offer);
               $state.go('youthfully.booking', {offerId: offer.id});
             } else if (offers.length > 1) {
-              $localstorage.setObject('offers', offers);
+              $hyperfoodstorage.setObject('offers', offers);
               $state.go('youthfully.offers');
             } else {
               //shouldn't need this situation as we should hide the book button

@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function(companyRef, $localstorage,$rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -17,7 +17,7 @@ angular.module('common.services')
         console.log("add tokens for request ", config.url);
 
         var is_a_request_to_original_domain = config.url.search(domainName)!==-1;
-        var have_a_session_token = $localstorage.getObject(CACHE_TOKEN);
+        var have_a_session_token = $hyperfoodstorage.getObject(CACHE_TOKEN);
         // var have_a_session_token = $window.sessionStorage.token;
         config.headers = config.headers || {};
         if (is_a_request_to_original_domain) {
@@ -26,14 +26,14 @@ angular.module('common.services')
             // config.headers.Authorization  = $window.sessionStorage.token;
             // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
             config.headers.Authorization  = have_a_session_token;
-            config.headers['X-API-EMAIL'] = $localstorage.getObject(CACHE_EMAIL);
+            config.headers['X-API-EMAIL'] = $hyperfoodstorage.getObject(CACHE_EMAIL);
           }
           if (companyUUID) {
               // mobile apps use pre-configured companyUUID
               config.headers['X-COMPANY-UUID'] = companyUUID;
           } else {
               // dashboard uses companyUUID from authenticated user
-               config.headers['X-COMPANY-UUID'] = $localstorage.getObject(CACHE_COMPANY_UUID);
+               config.headers['X-COMPANY-UUID'] = $hyperfoodstorage.getObject(CACHE_COMPANY_UUID);
               // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
           }
         }

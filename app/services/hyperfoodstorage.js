@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('$localstorage', ['$window', function($window) {
+.factory('$hyperfoodstorage', ['$window', function($window) {
   
   var getObjectFromStorage = function(key) {
       var cached_object = $window.localStorage[key];
