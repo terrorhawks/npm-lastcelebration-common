@@ -331,6 +331,18 @@ angular.module('common.services')
 		return deferred.promise;
     },
 
+    updateUser: function (user) {
+    	if (user) {
+    		$rootScope.authenticatedUser = user;
+    		$localStorage.authenticatedUser = user;
+    	}
+    },
+
+    refreshAuthenticatedUser: function() {
+    	//rsync rootScope after refresh
+    	$rootScope.authenticatedUser = $localStorage.authenticatedUser;
+    },
+
 	facebookLogin: function () {
 		console.log("facebook login");
 		var deferred = $q.defer();
