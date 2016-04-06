@@ -110,7 +110,7 @@ angular.module('common.services')
 		// $window.sessionStorage.token = user.token;
         // $window.sessionStorage.email = user.email;
         // if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
-     	$rootScope.authenticatedUser = user;
+     	$localStorage.authenticatedUser = user;
      };
 
      var removeAuthTokens = function () {
@@ -121,7 +121,7 @@ angular.module('common.services')
 	    // delete $window.sessionStorage.email;
 	    // delete $window.sessionStorage.companyUUID;
 	     console.log("Destroy current authenticated user");
-	     $rootScope.authenticatedUser = undefined;
+	     $localStorage.authenticatedUser = undefined;
      };
 
     var timeToExpire = 0;
@@ -275,9 +275,9 @@ angular.module('common.services')
 
         var deferred = $q.defer();
         
-        if ($rootScope.authenticatedUser) {
+        if ($localStorage.authenticatedUser) {
         	//if in root scope already authenticated
-			deferred.resolve($rootScope.authenticatedUser);
+			deferred.resolve($localStorage.authenticatedUser);
         } else if (unauthorizedScreen && Date.now() <= timeToExpire) {	
 		 	// if not forcing authentication and check in last x period then reject
 			// to avoid lots of requests to server
@@ -302,7 +302,7 @@ angular.module('common.services')
 
     logout: function () {
     	var deferred = $q.defer();
-    	if ($rootScope.authenticatedUser && $rootScope.authenticatedUser.is_facebook_auth) {
+    	if ($localStorage.authenticatedUser && $localStorage.authenticatedUser.is_facebook_auth) {
     		console.log("facebook logout");
     		facebookLogout().then(function () {
 				appLogout(deferred);
