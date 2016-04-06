@@ -26,7 +26,7 @@ angular.module('common.services')
 	    // delete $window.sessionStorage.email;
 	    // delete $window.sessionStorage.companyUUID;
 	     console.log("Destroy current authenticated user");
-	     $localStorage.authenticatedUser = undefined;
+	     delete $localStorage.authenticatedUser;
      };
 
     var timeToExpire = 0;
