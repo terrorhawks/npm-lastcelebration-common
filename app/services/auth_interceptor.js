@@ -11,8 +11,9 @@ angular.module('common.services')
       
       var suffix = '.html';
       var endsWithHTML = config.url.indexOf(suffix, config.url.length - suffix.length) !== -1;
+      var is_a_request_to_s3_bucket = config.url.search('s3.amazonaws.com')!==-1;
 
-      if (!endsWithHTML) {
+      if (!endsWithHTML && !is_a_request_to_s3_bucket) {
         
         console.log("add tokens for request ", config.url);
 
