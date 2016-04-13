@@ -115,6 +115,7 @@ angular.module('common.services')
 		// $window.sessionStorage.token = user.token;
         // $window.sessionStorage.email = user.email;
         // if (user.company) $window.sessionStorage.companyUUID = user.company.uuid;
+     	$rootScope.authenticatedUser = user;
      	$localStorage.authenticatedUser = user;
      };
 
