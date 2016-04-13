@@ -181,7 +181,7 @@ angular.module('common.services')
 
         var deferred = $q.defer();
         
-        if ($localStorage.authenticatedUser) {
+        if (unauthorizedScreen && $localStorage.authenticatedUser) {
         	//if in root scope already authenticated
 			deferred.resolve($localStorage.authenticatedUser);
         } else if (unauthorizedScreen && Date.now() <= timeToExpire) {	
