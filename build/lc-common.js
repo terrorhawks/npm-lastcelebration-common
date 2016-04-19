@@ -126,9 +126,13 @@ angular.module('common.services')
 		// delete $window.sessionStorage.token;
 	    // delete $window.sessionStorage.email;
 	    // delete $window.sessionStorage.companyUUID;
-	     console.log("Destroy current authenticated user");
-	     $rootScope.authenticatedUser = undefined;
-	     delete $localStorage.authenticatedUser;
+	    removeCachedUser(); 
+     };
+
+     var removeCachedUser = function () {
+     	console.log("Destroy current authenticated user");
+	    $rootScope.authenticatedUser = undefined;
+	    delete $localStorage.authenticatedUser;
      };
 
     var timeToExpire = 0;
@@ -290,6 +294,7 @@ angular.module('common.services')
 			// to avoid lots of requests to server
 			deferred.reject();
         } else {
+        	removeCachedUser();
         	$http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
 	          .then(function(response) {
 	          	console.log(response);
@@ -301,7 +306,6 @@ angular.module('common.services')
 	        	timeToExpire = new Date(Date.now() + cacheTime).getTime();
 	            deferred.reject(error);
 	            console.log("Error getAuthenticatedUser", JSON.stringify(error));
-	            removeAuthTokens();
 	        });	
         }  
         return deferred.promise;
