@@ -602,7 +602,9 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
                                       path: path});
                 }, function (error) {
                     // suppress failure, it still works,but a response error is thrown.
-                    deferred.resolve(file_uri);
+                    deferred.resolve({file_uri:file_uri,
+                                      file: file,
+                                      path: path});
                     console.warn("Failed to load to S3", JSON.stringify(error));
                     // deferred.reject(error);
                 });
