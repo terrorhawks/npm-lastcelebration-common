@@ -589,23 +589,24 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
                 var s3Uri = 'http://' + getBucketName(uploaded_from) + '.s3.amazonaws.com/';
                 var folder = create_folder(identifier);
                 var sizes = cropped_name;
-                var path = root_folder + '/' + folder + '/';
-                var file = uuid4.generate() + cropped_name + '.jpg';
-                var file_uri = s3Uri + path + file;
+                var uuid = uuid4.generate();
+                var file = root_folder + '/' + folder + '/' + uuid + cropped_name + '.jpg';
+                var file_uri = s3Uri + file;
                 console.log("Uploading file to s3.. ", file_uri);
                 var fd = createFormData(file,  options.data, image_uri);
                 console.log("postFormData", s3Uri, JSON.stringify(fd));
+                var output = { 
+                               uri: file_uri,
+                               file:  (uuid + cropped_name + '.jpg'),
+                               path:  (root_folder + '/' + folder + '/') 
+                             };
                 postFormData(s3Uri, fd).then(function (response) {
                     console.log("Successful load to S3", JSON.stringify(response));
-                    deferred.resolve({file_uri:file_uri,
-                                      file: file,
-                                      path: path});
+                    deferred.resolve(output);
                 }, function (error) {
                     // suppress failure, it still works,but a response error is thrown.
-                    deferred.resolve({file_uri:file_uri,
-                                      file: file,
-                                      path: path});
                     console.warn("Failed to load to S3", JSON.stringify(error));
+                    deferred.resolve(output);
                     // deferred.reject(error);
                 });
             }, function(error) {
