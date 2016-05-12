@@ -253,6 +253,10 @@ angular.module('common.services')
     	$rootScope.authenticatedUser = $localStorage.authenticatedUser;
     },
 
+    removeTokensAndCachedUser: function () {
+		removeAuthTokens();
+    },
+
 	facebookLogin: function () {
 		console.log("facebook login");
 		var deferred = $q.defer();

@@ -37,7 +37,7 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID, AuthenticationService) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -88,9 +88,9 @@ angular.module('common.services')
     },
     responseError: function(rejection) {
       console.log("Response failure", JSON.stringify(rejection));
-      // if (rejection.status === 500) {
-      //   $rootScope.$broadcast("redirect:error");
-      // }
+      if (rejection.status === 401) {
+        AuthenticationService.removeTokensAndCachedUser();
+      }
       if (rejection.status === 404 || rejection.status === 403) {
         $rootScope.$broadcast("redirect:home");
       }
@@ -353,6 +353,10 @@ angular.module('common.services')
     	$rootScope.authenticatedUser = $localStorage.authenticatedUser;
     },
 
+    removeTokensAndCachedUser: function () {
+		removeAuthTokens();
+    },
+
 	facebookLogin: function () {
 		console.log("facebook login");
 		var deferred = $q.defer();
@@ -590,7 +594,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
                 var folder = create_folder(identifier);
                 var sizes = cropped_name;
                 var uuid = uuid4.generate();
-                var file = root_folder + '/' + folder + '/' + uuid + cropped_name + '.jpg';
+                var file = root_folder + '/' + folder + '/' +  uuid + cropped_name + '.jpg';
                 var file_uri = s3Uri + file;
                 console.log("Uploading file to s3.. ", file_uri);
                 var fd = createFormData(file,  options.data, image_uri);
@@ -605,7 +609,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
                     deferred.resolve(output);
                 }, function (error) {
                     // suppress failure, it still works,but a response error is thrown.
-                    console.warn("Failed to load to S3", JSON.stringify(error));
+                    console.warn("Warning it may have failed to load to S3", JSON.stringify(error));
                     deferred.resolve(output);
                     // deferred.reject(error);
                 });

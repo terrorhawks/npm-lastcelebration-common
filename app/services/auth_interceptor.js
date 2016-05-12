@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID) {
+.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID, AuthenticationService) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -51,9 +51,9 @@ angular.module('common.services')
     },
     responseError: function(rejection) {
       console.log("Response failure", JSON.stringify(rejection));
-      // if (rejection.status === 500) {
-      //   $rootScope.$broadcast("redirect:error");
-      // }
+      if (rejection.status === 401) {
+        AuthenticationService.removeTokensAndCachedUser();
+      }
       if (rejection.status === 404 || rejection.status === 403) {
         $rootScope.$broadcast("redirect:home");
       }
