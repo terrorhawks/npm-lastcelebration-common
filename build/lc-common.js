@@ -37,7 +37,7 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function(companyRef, $hyperfoodstorage,$rootScope, $q, $window, domainName, companyUUID, AuthenticationService) {
+.factory('authInterceptor', function(companyRef, $hyperfoodstorage, $rootScope, $q, $window, domainName, companyUUID, $localStorage) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -89,7 +89,11 @@ angular.module('common.services')
     responseError: function(rejection) {
       console.log("Response failure", JSON.stringify(rejection));
       if (rejection.status === 401) {
-        AuthenticationService.removeTokensAndCachedUser();
+        $hyperfoodstorage.setObject(CACHE_TOKEN);
+        $hyperfoodstorage.setObject(CACHE_EMAIL);
+        $hyperfoodstorage.setObject(CACHE_COMPANY_UUID);
+        $rootScope.authenticatedUser = undefined;
+        delete $localStorage.authenticatedUser;
       }
       if (rejection.status === 404 || rejection.status === 403) {
         $rootScope.$broadcast("redirect:home");
