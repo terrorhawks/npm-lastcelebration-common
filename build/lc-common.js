@@ -1003,7 +1003,7 @@ angular.module('common.filters')
                 }
             }
 
-            return value + ' …';
+            return value + '…';
         };
     })
 
