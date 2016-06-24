@@ -725,6 +725,10 @@ angular.module('common.resources')
     
     query: {
       isArray: false
+    },
+
+    query_dashboard: {
+    	isArray: true
     }
 
   });
@@ -1044,16 +1048,6 @@ angular.module('common.filters')
         return function(amount, currencyCode) {
             if(amount) {
                 return $filter('isoCurrency')(amount, currencyCode).replace('.00', '');
-            }
-        };
-    }])
-
-    //refactor and remove
-  .filter('belairCurrency', ['$filter', function ($filter) {
-        return function(amount, currencyCode) {
-            if (amount) {
-                var drivenToPound = amount / 100;
-                return $filter('smartCurrency')(drivenToPound, currencyCode);
             }
         };
     }])

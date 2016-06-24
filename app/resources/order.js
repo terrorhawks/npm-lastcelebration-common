@@ -10,6 +10,10 @@ angular.module('common.resources')
     
     query: {
       isArray: false
+    },
+
+    query_dashboard: {
+    	isArray: true
     }
 
   });
