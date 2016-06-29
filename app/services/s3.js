@@ -1,4 +1,4 @@
-var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, awsSiteImageUploadBucket) {
+var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
 
     var s3_config;
     var purge_date;
@@ -91,11 +91,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
     }
 
     function getBucketName(uploaded_from) {
-        if (!!uploaded_from && uploaded_from === 'signup') {
-            return awsSiteImageUploadBucket;
-        } else {
-            return awsImageUploadBucket;
-        }
+        return awsImageUploadBucket;
     }
 
     return {
@@ -144,5 +140,5 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4, aws
 
 };
 
-s3Service.$inject = window.ionic ? ['$q', '$http', 'domainName', 'awsImageUploadBucket', 'uuid4'] : ['$q', '$http', 'domainName', 'awsImageUploadBucket', 'uuid4', 'awsSiteImageUploadBucket'];
+s3Service.$inject = ['$q', '$http', 'domainName', 'awsImageUploadBucket', 'uuid4'];
 angular.module('common.services').factory('S3', s3Service);
