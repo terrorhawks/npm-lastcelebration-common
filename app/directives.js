@@ -31,11 +31,11 @@ angular.module('common.directives')
                     scope.$apply(function () {
                         scope.fileread = loadEvent.target.result;
                     });
-                }
+                };
                 reader.readAsDataURL(changeEvent.target.files[0]);
             });
         }
-    }
+    };
 }])
 
 .directive('formatPostcode', function($filter, $browser) {
