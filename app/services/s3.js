@@ -12,7 +12,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
         });
     }
 
-    function createFormData(key, options, contents) {
+    function createFormData(key, options, contents, is_blob) {
         console.log("createFormData", key, JSON.stringify(options));
         var fd = new FormData();
         fd.append('key', key);
@@ -21,7 +21,11 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
         fd.append('AWSAccessKeyId', options.key);
         fd.append('policy', options.policy);
         fd.append('signature', options.signature);
-        fd.append('file', dataURItoBlob(contents));
+        if (is_blob) {
+           fd.append('file', contents);
+        } else {
+           fd.append('file', dataURItoBlob(contents)); 
+        }
         return fd;
     }
 
@@ -99,7 +103,10 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
             return sha1(email);
         },
 
-        upload: function(image_uri, identifier, root_folder, uploaded_from, cropped_name) {
+        upload: function(image_uri, identifier, root_folder, uploaded_from, cropped_name, is_blob) {
+            if (is_blob === undefined) {
+                is_blob = false;
+            }
             var deferred = $q.defer();
             if (!root_folder) {
                 root_folder = '';
@@ -115,7 +122,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
                 var file = root_folder + '/' + folder + '/' +  uuid + cropped_name + '.jpg';
                 var file_uri = s3Uri + file;
                 console.log("Uploading file to s3.. ", file_uri);
-                var fd = createFormData(file,  options.data, image_uri);
+                var fd = createFormData(file,  options.data, image_uri, is_blob);
                 console.log("postFormData", s3Uri, JSON.stringify(fd));
                 var output = { 
                                uri: file_uri,
