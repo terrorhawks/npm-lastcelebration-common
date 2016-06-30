@@ -13,7 +13,7 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
     }
 
     function createFormData(key, options, contents, is_blob) {
-        console.log("createFormData", key, JSON.stringify(options));
+        console.log("createFormData", key, JSON.stringify(options), "is blob?", is_blob);
         var fd = new FormData();
         fd.append('key', key);
         fd.append('acl', 'public-read');
@@ -29,33 +29,33 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
         return fd;
     }
 
-    // function dataURLtoBlob(dataURI) {
+    function base64DataURItoBlob(dataURI) {
 
-    //     var byteString;
-    //     var arrayBuffer;
-    //     var intArray;
-    //     var i;
-    //     var mimeString;
-    //     var bb;
+        var byteString;
+        var arrayBuffer;
+        var intArray;
+        var i;
+        var mimeString;
+        var bb;
 
-    //     if (dataURI.split(',')[0].indexOf('base64') >= 0) {
-    //         // Convert base64 to raw binary data held in a string:
-    //         byteString = atob(dataURI.split(',')[1]);
-    //     } else {
-    //         // Convert base64/URLEncoded data component to raw binary data:
-    //         byteString = decodeURIComponent(dataURI.split(',')[1]);
-    //     }
-    //     // Write the bytes of the string to an ArrayBuffer:
-    //     arrayBuffer = new ArrayBuffer(byteString.length);
-    //     intArray = new Uint8Array(arrayBuffer);
-    //     for (i = 0; i < byteString.length; i += 1) {
-    //         intArray[i] = byteString.charCodeAt(i);
-    //     }
-    //     // Separate out the mime component:
-    //     mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    //     // Write the ArrayBuffer (or ArrayBufferView) to a blob:
-    //     return new Blob([intArray],{type: mimeString});
-    // }
+        if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+            // Convert base64 to raw binary data held in a string:
+            byteString = atob(dataURI.split(',')[1]);
+        } else {
+            // Convert base64/URLEncoded data component to raw binary data:
+            byteString = decodeURIComponent(dataURI.split(',')[1]);
+        }
+        // Write the bytes of the string to an ArrayBuffer:
+        arrayBuffer = new ArrayBuffer(byteString.length);
+        intArray = new Uint8Array(arrayBuffer);
+        for (i = 0; i < byteString.length; i += 1) {
+            intArray[i] = byteString.charCodeAt(i);
+        }
+        // Separate out the mime component:
+        mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        // Write the ArrayBuffer (or ArrayBufferView) to a blob:
+        return new Blob([intArray],{type: mimeString});
+    }
 
     function dataURItoBlob(b64Data) {
         var byteCharacters = atob(b64Data);
@@ -99,6 +99,11 @@ var s3Service = function($q, $http, domainName, awsImageUploadBucket, uuid4) {
     }
 
     return {
+
+        base64DataURItoBlob: function (dataURI) {
+            return base64DataURItoBlob(dataURI);
+        },
+        
         sha: function(email) {
             return sha1(email);
         },
