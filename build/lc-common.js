@@ -655,6 +655,27 @@ angular.module('common.resources')
 }]);
 angular.module('common.resources')
 
+.factory('Category', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/dashboard/categories/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: true
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
 .factory('Company', ['$resource', 'domainName', function ($resource, domainName) {
 
   return  $resource(domainName + '/api/companies/:id', { id: '@id' }, {
@@ -666,6 +687,7 @@ angular.module('common.resources')
   });
 
 }]);
+
 angular.module('common.resources')
 
 .factory('Message', ['$resource', 'domainName', function ($resource, domainName) {
@@ -750,6 +772,48 @@ angular.module('common.resources')
 
     create: {
       method: 'POST'
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
+.factory('Product', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/dashboard/products/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: true
+    }
+
+  });
+
+}]);
+angular.module('common.resources')
+
+.factory('ProductOptionGroup', ['$resource', 'domainName', function ($resource, domainName) {
+
+  return  $resource(domainName + '/api/dashboard/product_option_groups/:id', { id: '@id' }, {
+
+    create: {
+      method: 'POST'
+    },
+
+    update: {
+      method: 'PUT'
+    },
+    
+    query: {
+      isArray: true
     }
 
   });
