@@ -692,6 +692,7 @@ angular.module('common.resources')
 .factory('Menu', ['$resource', 'domainName', 'Category', 'Product', 'ProductOptionGroup', function ($resource, domainName, Category, Product, ProductOptionGroup) {
 
     var transformer = function(data, header) {
+      console.log("transformer for menu");
        //Getting string data in response
           var jsonData = JSON.parse(data); //or angular.fromJson(data)
           var menus = [];
@@ -725,6 +726,7 @@ angular.module('common.resources')
             }
             menus.push(menu);
           });
+          console.log("Menus Added", menus);
           return menus;
     };
 
