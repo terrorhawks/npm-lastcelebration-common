@@ -10,7 +10,7 @@ angular.module('common.resources')
           var menu, category, product, optionGroup;
 
           angular.forEach(jsonData, function(menu) {
-            menu = new Menu(menu);
+            // menu = new Menu(menu);
             if (menu.categories) {
               var categories = [];
               angular.forEach(menu.categories, function (category) {
