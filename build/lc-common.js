@@ -730,7 +730,7 @@ angular.module('common.resources')
           return menus;
     };
 
-    return $resource(domainName + '/api/dashboard/categories/:id', { id: '@id' }, {
+    return $resource(domainName + '/api/dashboard/menus/:id', { id: '@id' }, {
 
     create: {
       method: 'POST',
