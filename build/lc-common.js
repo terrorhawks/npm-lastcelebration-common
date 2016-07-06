@@ -703,6 +703,7 @@ angular.module('common.resources')
     },
 
     delete: {
+      method: 'DELETE',
       transformResponse: transformer
     }
 
@@ -890,6 +891,10 @@ angular.module('common.resources')
     
     query: {
       isArray: true
+    },
+
+    delete: {
+      method: 'DELETE'
     }
 
   });
@@ -911,6 +916,10 @@ angular.module('common.resources')
     
     query: {
       isArray: true
+    },
+
+    delete: {
+      method: 'DELETE'
     }
 
   });

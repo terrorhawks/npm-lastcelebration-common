@@ -48,6 +48,7 @@ angular.module('common.resources')
     },
 
     delete: {
+      method: 'DELETE',
       transformResponse: transformer
     }
 

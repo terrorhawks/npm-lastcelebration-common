@@ -14,6 +14,10 @@ angular.module('common.resources')
     
     query: {
       isArray: true
+    },
+
+    delete: {
+      method: 'DELETE'
     }
 
   });
