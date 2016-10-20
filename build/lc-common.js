@@ -41,6 +41,7 @@ angular.module('common.services')
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
+    var CACHE_FB    =           companyRef + '.userAuth.fb';
     var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
 
   return {
@@ -69,6 +70,8 @@ angular.module('common.services')
             // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
             config.headers.Authorization  = have_a_session_token;
             config.headers['X-API-EMAIL'] = $hyperfoodstorage.getObject(CACHE_EMAIL);
+            config.headers['X-API-FB']    = $hyperfoodstorage.getObject(CACHE_FB);
+
           }
           if (companyUUID) {
               // mobile apps use pre-configured companyUUID
@@ -108,12 +111,16 @@ angular.module('common.services')
 
 	var CACHE_TOKEN =           companyRef + '.userAuth.token';
 	var CACHE_EMAIL =           companyRef + '.userAuth.email';
+	var CACHE_FB    =           companyRef + '.userAuth.fb';
 	var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
 	var CACHE_FACEBOOK_TOKEN =  companyRef + '.userAuth.facebook';
 
 	var createAuthTokens = function (user) {
 		$hyperfoodstorage.setObject(CACHE_TOKEN, user.token);
 		$hyperfoodstorage.setObject(CACHE_EMAIL, user.email);
+		if (user.facebook) {
+			$hyperfoodstorage.setObject(CACHE_FB, user.facebook.id);
+		}
 		if (user.company) $hyperfoodstorage.setObject(CACHE_COMPANY_UUID, user.company.uuid);
 		
 		// $window.sessionStorage.token = user.token;
@@ -126,15 +133,12 @@ angular.module('common.services')
      var removeAuthTokens = function () {
      	$hyperfoodstorage.setObject(CACHE_TOKEN);
      	$hyperfoodstorage.setObject(CACHE_EMAIL);
+     	$hyperfoodstorage.setObject(CACHE_FB);
      	$hyperfoodstorage.setObject(CACHE_COMPANY_UUID);
 		// delete $window.sessionStorage.token;
 	    // delete $window.sessionStorage.email;
 	    // delete $window.sessionStorage.companyUUID;
-	    removeCachedUser(); 
-     };
-
-     var removeCachedUser = function () {
-     	console.log("Destroy current authenticated user");
+	    console.log("Destroy current authenticated user");
 	    $rootScope.authenticatedUser = undefined;
 	    delete $localStorage.authenticatedUser;
      };
@@ -298,7 +302,6 @@ angular.module('common.services')
 			// to avoid lots of requests to server
 			deferred.reject();
         } else {
-        	removeCachedUser();
         	$http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
 	          .then(function(response) {
 	          	console.log(response);

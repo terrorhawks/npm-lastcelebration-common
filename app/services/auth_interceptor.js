@@ -4,6 +4,7 @@ angular.module('common.services')
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
+    var CACHE_FB    =           companyRef + '.userAuth.fb';
     var CACHE_COMPANY_UUID =    companyRef + '.userAuth.company';
 
   return {
@@ -32,6 +33,8 @@ angular.module('common.services')
             // config.headers['X-API-EMAIL'] = $window.sessionStorage.email;
             config.headers.Authorization  = have_a_session_token;
             config.headers['X-API-EMAIL'] = $hyperfoodstorage.getObject(CACHE_EMAIL);
+            config.headers['X-API-FB']    = $hyperfoodstorage.getObject(CACHE_FB);
+
           }
           if (companyUUID) {
               // mobile apps use pre-configured companyUUID
