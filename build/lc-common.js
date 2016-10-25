@@ -443,6 +443,7 @@ angular.module('common.services')
     },
 
     clear: function() {
+      console.log("WARNING: clearing cache");
       $window.localStorage.clear();
     },
 
