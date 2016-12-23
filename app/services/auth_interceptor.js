@@ -1,6 +1,6 @@
 angular.module('common.services')
 
-.factory('authInterceptor', function(APP, companyRef, $hyperfoodstorage, $rootScope, $q, $window, domainName, companyUUID, $localStorage) {
+.factory('authInterceptor', function(appVersion, companyRef, $hyperfoodstorage, $rootScope, $q, $window, domainName, companyUUID, $localStorage) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -44,8 +44,8 @@ angular.module('common.services')
                config.headers['X-COMPANY-UUID'] = $hyperfoodstorage.getObject(CACHE_COMPANY_UUID);
               // config.headers['X-COMPANY-UUID'] = $window.sessionStorage.companyUUID;
           }
-          if (APP) {
-            config.headers['X-APP-VERSION'] = APP;
+          if (appVersion) {
+            config.headers['X-APP-VERSION'] = appVersion;
           }
         }
     }
