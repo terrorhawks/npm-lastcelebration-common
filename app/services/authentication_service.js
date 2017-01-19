@@ -194,7 +194,6 @@ angular.module('common.services')
 			// to avoid lots of requests to server
 			deferred.reject();
         } else {
-        	removeCachedUser();
         	$http.get(domainName + '/api/users/current', {interceptAuth: !unauthorizedScreen})
 	          .then(function(response) {
 	          	console.log(response);
