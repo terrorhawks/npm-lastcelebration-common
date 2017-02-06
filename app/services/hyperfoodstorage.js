@@ -2,8 +2,9 @@ angular.module('common.services')
 
 .factory('$hyperfoodstorage', ['$window', 'appVersion', function($window, appVersion) {
   
+  //private
   var getObjectFromStorage = function(key) {
-      var cached_object = $window.localStorage[key + appVersion];
+      var cached_object = $window.localStorage[key];
       if (cached_object) {
         try {
           return JSON.parse(cached_object);
@@ -19,15 +20,17 @@ angular.module('common.services')
   return {
     
     set: function(key, value) {
+      key = key + appVersion;
       if (value) {
-        $window.localStorage[key + appVersion] = value;
+        $window.localStorage[key] = value;
       } else {
-        $window.localStorage.removeItem(key + appVersion);
+        $window.localStorage.removeItem(key);
       }
     },
 
     get: function(key, defaultValue) {
-      return $window.localStorage[key + appVersion] || defaultValue + appVersion;
+
+      return $window.localStorage[(key + appVersion)] || (defaultValue + appVersion);
     },
 
     setObject: function(key, value, cacheTime) {
@@ -38,10 +41,10 @@ angular.module('common.services')
             console.log("setting cache time to ", timeToExpire);
             $window.localStorage[cacheTimeKey] = timeToExpire;
         }
-        console.log("storing object in cache with key", key + appVersion);
+        console.log("storing object in cache with key", (key + appVersion));
         $window.localStorage[key + appVersion] = JSON.stringify(value);
       } else {
-        $window.localStorage.removeItem(key + appVersion);
+        $window.localStorage.removeItem((key + appVersion));
       }
     },
 
