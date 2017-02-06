@@ -1,6 +1,6 @@
 angular.module('common.resources')
 
-.factory('User', ['$resource', 'domainName', 'ResourceHandler', function ($resource, domainName, ResourceHandler) {
+.factory('User', ['$resource', 'domainName', 'resourceHandler', function ($resource, domainName, resourceHandler) {
 
     var resource =  $resource(domainName + '/api/users/:id', { id: '@id' }, {
 
@@ -18,7 +18,7 @@ angular.module('common.resources')
 
   });
 
-  resource = ResourceHandler.wrapActions(resource, ["update"]);
+  resource = resourceHandler.wrapActions(resource, ["update"]);
 
   return resource;
 
