@@ -1,8 +1,8 @@
 angular.module('common.resources')
 
-.factory('User', ['$resource', 'domainName', 'resourceHandler', function ($resource, domainName, resourceHandler) {
+.factory('User', ['$resource', 'domainName', function ($resource, domainName) {
 
-    var resource =  $resource(domainName + '/api/users/:id', { id: '@id' }, {
+  return  $resource(domainName + '/api/users/:id', { id: '@id' }, {
 
     create: {
       method: 'POST'
@@ -17,9 +17,5 @@ angular.module('common.resources')
     }
 
   });
-
-  resource = resourceHandler.wrapActions(resource, ["update"]);
-
-  return resource;
 
 }]);
