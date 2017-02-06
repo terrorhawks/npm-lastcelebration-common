@@ -1004,7 +1004,7 @@ angular.module('common.services')
     // create new action wrapping the original and sending interceptAuth
     resource[action] = function( data, success, error){
       return resource['_' + action](
-        angular.extend({}, data || {}, {interceptAuth: resourceHandler.get()}),
+        angular.extend({}, data || {interceptAuth: resourceHandler.get()}, {interceptAuth: resourceHandler.get()}),
         success,
         error
       );
