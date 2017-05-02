@@ -309,8 +309,8 @@ angular.module('common.services')
 	          .then(function(response) {
 	          	console.log(response);
 	          	var user = response.data.user;
+	          	createAuthTokens(user);
 	          	$rootScope.$broadcast('event:auth', user);
-	            createAuthTokens(user);
 	            deferred.resolve(user);
 	        }, function (error) {
 	        	timeToExpire = new Date(Date.now() + cacheTime).getTime();
