@@ -37,7 +37,7 @@ return {
 }]);
 angular.module('common.services')
 
-.factory('authInterceptor', function(appVersion, companyRef, $hyperfoodstorage, $rootScope, $q, $window, domainName, companyUUID, $localStorage) {
+.factory('authInterceptor', ['appVersion', 'companyRef','$hyperfoodstorage', '$rootScope', '$q', '$window', 'domainName', 'companyUUID', '$localStorage', function(appVersion, companyRef, $hyperfoodstorage, $rootScope, $q, $window, domainName, companyUUID, $localStorage) {
     
     var CACHE_TOKEN =           companyRef + '.userAuth.token';
     var CACHE_EMAIL =           companyRef + '.userAuth.email';
@@ -107,7 +107,7 @@ angular.module('common.services')
       return $q.reject(rejection);
     }
   };
-});
+}]);
 angular.module('common.services')
 
 .factory('AuthenticationService', ['companyRef', '$hyperfoodstorage', '$localStorage', 'Facebook', '$rootScope', '$http', 'domainName', '$q', '$window', 'Auth', '$state', '$timeout', function(companyRef, $hyperfoodstorage, $localStorage, Facebook, $rootScope, $http, domainName, $q, $window, Auth, $state, $timeout) {
