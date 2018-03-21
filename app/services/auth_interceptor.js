@@ -57,15 +57,20 @@ angular.module('common.services')
     },
     responseError: function(rejection) {
       console.log("Response failure", JSON.stringify(rejection));
-      if (rejection.status === 401) {
-        $hyperfoodstorage.setObject(CACHE_TOKEN);
-        $hyperfoodstorage.setObject(CACHE_EMAIL);
-        $hyperfoodstorage.setObject(CACHE_COMPANY_UUID);
-        $rootScope.authenticatedUser = undefined;
-        delete $localStorage.authenticatedUser;
-      }
-      if (rejection.status === 404 || rejection.status === 403) {
-        $rootScope.$broadcast("redirect:home");
+      if (rejection) {
+        if (rejection.status === 401) {
+          $hyperfoodstorage.setObject(CACHE_TOKEN);
+          $hyperfoodstorage.setObject(CACHE_EMAIL);
+          $hyperfoodstorage.setObject(CACHE_COMPANY_UUID);
+          $rootScope.authenticatedUser = undefined;
+          delete $localStorage.authenticatedUser;
+        }
+        if (rejection.status === 408) {
+          console.log("Timeout!!!!!!!!!!!!");
+        }
+        if (rejection.status === 404 || rejection.status === 403) {
+          $rootScope.$broadcast("redirect:home");
+        }
       }
       return $q.reject(rejection);
     }

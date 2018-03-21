@@ -14,7 +14,10 @@ module.exports = function (grunt) {
             }
         },
         jshint: {
-            all: ['Gruntfile.js', 'app/**/*.js', 'app/*.js']
+            options: {
+                reporterOutput: ""
+            },
+            all: ['Gruntfile.js', 'app/**/*.js', 'app/*.js'],
         }
 
 
