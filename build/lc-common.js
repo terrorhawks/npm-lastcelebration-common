@@ -378,10 +378,10 @@ angular.module('common.services')
 		console.log("call FB loginStatus", Facebook);
 
 	    var timeoutPromise = $timeout(function() {
-	      loginStatus.reject(); //aborts the request when timed out
+	      loginStatus = undefined;
+	      deferred.reject(); //aborts the request when timed out
 	      console.log("Timed out");
 	    }, 5000); //we set a timeout for 250ms and store the promise in order to be cancelled later if the data does not arrive within 250ms
-
 
 		var loginStatus = Facebook.loginStatus();
 		console.log("call FB loginStatus callback", JSON.stringify(loginStatus));
