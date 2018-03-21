@@ -351,7 +351,11 @@ angular.module('common.services')
 	      	deferred.resolve(user);
 	    }, function(response) {
 	      removeAuthTokens();
-	      deferred.reject([response.data.error]);
+	      if (response && response.data && response.data.error) {
+	      	deferred.reject([response.data.error]);
+	      } else {
+	      	deferred.reject();
+	      }
 	    });
 		return deferred.promise;
     },
