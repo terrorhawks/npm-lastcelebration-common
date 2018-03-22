@@ -205,22 +205,19 @@ angular.module('common.services')
 
 	var facebookSignin = function (deferred) {
 		console.log("Facebook sign-in");
-		var fblogin = Facebook.login();
-		
-    	fblogin.then(function(success) {
-	      console.log("logged in", success);
-	      facebookMe(deferred, success);
-	    }, function (e) {
-	      console.log("logged in failed", JSON.stringify(e));
-	      deferred.reject(e);
+		Facebook.login()
+	    	.then(function(success) {
+		      console.log("logged in", success);
+		      facebookMe(deferred, success);
+		    }, function (e) {
+		      console.log("logged in failed", JSON.stringify(e));
+		      deferred.reject(e);
 		});
-
-		// $timeout(function () {
-		// 	console.log("facebook timeout");
-		// 	if (deferred.promise.$$state.status === 0) {
-		// 		deferred.reject("Unable to authenticate with facebook, please try again");
-		// 	}
-		// }, 30000);
+		$timeout(function () {
+			if (deferred.promise.$$state.status === 0) {
+				deferred.reject("Unable to authenticate with facebook, please try again");
+			}
+		}, 30000);
 	};
 
 	var facebookLogout = function () { 
@@ -382,18 +379,18 @@ angular.module('common.services')
 	facebookLogin: function () {
 		console.log("facebook login");
 		var deferred = $q.defer();
-		console.log("call FB loginStatus");
+		console.log("call FB loginStatus", Facebook);
 
-	    // var timeoutPromise = $timeout(function() {
-	    //   loginStatus = undefined;
-	    //   deferred.reject(); //aborts the request when timed out
-	    //   console.log("Timed out");
-	    // }, 5000); //we set a timeout for 250ms and store the promise in order to be cancelled later if the data does not arrive within 250ms
+	    var timeoutPromise = $timeout(function() {
+	      loginStatus = undefined;
+	      deferred.reject(); //aborts the request when timed out
+	      console.log("Timed out");
+	    }, 5000); //we set a timeout for 250ms and store the promise in order to be cancelled later if the data does not arrive within 250ms
 
 		var loginStatus = Facebook.loginStatus();
 		console.log("call FB loginStatus callback", JSON.stringify(loginStatus));
 		loginStatus.then(function (response) {
-			// $timeout.cancel(timeoutPromise);
+			$timeout.cancel(timeoutPromise);
 			try {
 				console.log("loginStatus callback!");
 				if (response.status === 'connected') {
@@ -408,7 +405,7 @@ angular.module('common.services')
 				console.error("Failed to check login status", JSON.stringify(e));
 			}	 
 		}, function (e) {
-			// $timeout.cancel(timeoutPromise);
+			$timeout.cancel(timeoutPromise);
 			console.log("Facebook, login failing", e);
 			deferred.reject(e);
 		});
